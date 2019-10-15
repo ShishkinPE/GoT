@@ -4,14 +4,9 @@ from random import *
 from time import *
 from consts import *
 
-def Phase_Vesteros():
+
+def show_map():
     pass
 
-def Phase_Plans():
-    pass
-
-def Phase_doing():
-    pass
-
-def battle():
+def picture_coin_power():
     pass
