@@ -9,6 +9,7 @@ from Grapica import*
 from BaseGame import*
 
 game_proc='menu'
+player_status='niht'
 
 class army:
     def __init__(self, people_num, knight_num, ship_num, mashine_num, place):
@@ -19,15 +20,42 @@ class army:
         self.place = place
 
 class house:
-    def __init__(self, name, food, castle_num, money, status, army, territory):
+    def __init__(self, name, food, castle_num, status, army, territory):
         self.name = name
-        self.status = status #'player' or 'computer' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
+        self.status = status #'player' or 'comp' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
         self.food = food
         self.castle_num = castle_num
         self.money = 5
         self.army = army #это !!массив!! с элементами по количеству отрядов в армиях, нужен для расчёта снабжения
 
 
+
+
+barateon=house('barateon', 2, 1, 'comp', [], [])
+martell=house('martell', 2, 1, 'comp', [], [])
+tirrel=house('tirrel', 2, 1, 'comp', [], [])
+lannister=house('lannister', 2, 1, 'comp', [], [])
+greydjoy=house('gredjoy', 2, 1, 'comp', [], [])
+stark=house('stark', 1, 2, 'comp', [], [])
+
+
+def Phase_Vesteros():
+    pass
+
+def Phase_Plans():
+    pass
+
+def Phase_doing():
+    pass
+
+def battle():
+    pass
+
+def scroll_up(event):
+    map_up()
+
+def scroll_down(event):
+    map_down()
         
 def main_click(event):
     global game_proc
@@ -47,11 +75,49 @@ def main_click(event):
 
     if game_proc=='barateon':
         game_proc='start_game'
+        barateon.status='player'
         show_map(canv)
+        player_status=barateon
+        Phase_Plans()
+
+    if game_proc=='martell':
+        game_proc='start_game'
+        martell.status='player'
+        show_map(root)
+        player_status=martell
+        Phase_Plans()
+
+    if game_proc=='tirrel':
+        game_proc='start_game'
+        tirrel.status='player'
+        show_map(root)
+        player_status=tirrel
+        Phase_Plans()
+
+    if game_proc=='lannister':
+        game_proc='start_game'
+        lannister.status='player'
+        show_map(root)
+        player_status=lannister
+        Phase_Plans()
+
+    if game_proc=='greydjoy':
+        game_proc='start_game'
+        greydjoy.status='player'
+        show_map(root)
+        player_status=greydjoy
+        Phase_Plans()
+
+    if game_proc=='stark':
+        game_proc='start_game'
+        stark.status='player'
+        show_map(root)
+        player_status=stark
+        Phase_Plans()
     
     print(game_proc)
 
-
+map_y=0
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
 canv = Canvas(root,bg='white')
@@ -59,7 +125,8 @@ canv.pack(fill = BOTH, expand = 1)
 
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
-
+root.bind('<Button-4>', scroll_up)
+root.bind('<Button-5>', scroll_down)
 print('hello Vesteros')
 
 
