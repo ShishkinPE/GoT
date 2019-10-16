@@ -17,12 +17,14 @@ def show_map(canv):
 
 def map_up():
     global h
-    h=h-5
+    if h > -1742:
+        h=h-15
     image_map.place(x=0, y=h)
     
 def map_down():
     global h
-    h=h+5
+    if h < 0:
+        h=h+15
     image_map.place(x=0, y=h)
     
 
