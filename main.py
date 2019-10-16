@@ -125,8 +125,8 @@ canv.pack(fill = BOTH, expand = 1)
 
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
-root.bind('<Button-4>', scroll_up)
-root.bind('<Button-5>', scroll_down)
+root.bind('<Button-4>', scroll_down)
+root.bind('<Button-5>', scroll_up)
 print('hello Vesteros')
 
 
