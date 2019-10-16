@@ -38,7 +38,7 @@ def main_click(event):
     if game_proc=='menu':
         game_proc=menu_click(event.x, event.y)
         if game_proc=='choise':
-            choise_house_draw(canv)
+            menu_house_draw(canv)
         if game_proc=='load':
             pass
         
@@ -58,7 +58,7 @@ canv = Canvas(root,bg='white')
 canv.pack(fill = BOTH, expand = 1)
 
 menu_draw(canv)
-canv.bind('<Button-1>', main_click)
+root.bind('<Button-1>', main_click)
 
 print('hello Vesteros')
 

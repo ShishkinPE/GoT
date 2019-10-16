@@ -12,11 +12,20 @@ butShag=0.15
 
 
 def menu_draw(canv):
-    canv.create_rectangle(0, 0, SX(), SY(), fill='green') # Фон меню
-    canv.create_rectangle(0.4*SX(), 0.3*SY(), 0.6*SX(), 0.35*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.45*SY(), 0.6*SX(), 0.5*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.6*SY(), 0.6*SX(), 0.65*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.75*SY(), 0.6*SX(), 0.8*SY(), fill='blue')
+    path="media/menu.gif"
+    img = PhotoImage(file=path)
+    print(help('PhotoImage'))
+    print(type(img))
+    image_map=Label(canv, image=img)
+    image_map.place(x = 0,y = 0)
+
+def menu_house_draw(canv):
+    path="media/menu-house.gif"
+    img = PhotoImage(file=path)
+    print(help('PhotoImage'))
+    print(type(img))
+    image_map=Label(canv, image=img)
+    image_map.place(x = 0,y = 0)
 
 def menu_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
@@ -33,15 +42,6 @@ def menu_click(x, y):
         exit()
     else:
         return 'menu'
-    
-def choise_house_draw(canv):
-    canv.create_rectangle(0, 0, SX(), SY(), fill='green') # Фон меню
-    canv.create_rectangle(0.4*SX(), 0.3*SY(), 0.6*SX(), 0.35*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.45*SY(), 0.6*SX(), 0.5*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.6*SY(), 0.6*SX(), 0.65*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.75*SY(), 0.6*SX(), 0.8*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.85*SY(), 0.6*SX(), 0.9*SY(), fill='blue')
-    canv.create_rectangle(0.4*SX(), 0.95*SY(), 0.6*SX(), 1.0*SY(), fill='blue')
 
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
