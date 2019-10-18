@@ -4,20 +4,21 @@ from random import *
 from time import *
 from menu import*
 from consts import *
-from Territory import*
-from Grapica import*
-from BaseGame import*
+from Territory import *
+from Grapica import *
+from BaseGame import *
 
 game_proc='menu'
 player_status='niht'
 
 class army:
-    def __init__(self, people_num, knight_num, ship_num, mashine_num, place):
+    def __init__(self, people_num, knight_num, ship_num, mashine_num, place, owner):
         self.people_num = people_num
         self.knight_num = knight_num
         self.ship_num = ship_num
         self.mashine_num = mashine_num
         self.place = place
+        self.owner = owner
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory):
@@ -122,7 +123,8 @@ root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
 canv = Canvas(root,bg='white')
 canv.pack(fill = BOTH, expand = 1)
-
+arm1=army(1,1,0,1,winterfall,'stark')
+show_army(arm1, root)
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
 root.bind('<Button-4>', scroll_down)

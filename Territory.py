@@ -1,5 +1,5 @@
 class cell:
-    def __init__(self, place, food, money, castles, sosed, type_cell, x, y,x1,y1):
+    def __init__(self, place, food, money, castles, sosed, type_cell, x, y, army_x, army_y):
         self.place=place
         self.food=food
         self.money=money
@@ -9,8 +9,8 @@ class cell:
         self.x=x
         self.y=y
         self.r=40 #radius knopki
-        self.army_x=x1
-        self.army_y=y1
+        self.army_x=army_x
+        self.army_y=army_y
         
 winterfall=cell('winterfall', 1, 1, 2, [], 'earth', 530, 420, 780,300)
 winterfall_port=cell('winterfall_port', 0, 0, 0, [], 'port', 360, 280, 360, 280)
