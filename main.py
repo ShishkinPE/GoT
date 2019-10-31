@@ -21,6 +21,21 @@ def menu_house_draw(canv):
     image_map=Label(canv, image=img)
     image_map.place(x = 0,y = 0)
 
+def create_track():
+    global images, image_track
+    path = "media/track.gif"
+    img = PhotoImage(file=path)
+    images.append(img)
+    image_track = Label(canv, image=img)
+
+def show_track():
+    global image_track
+    image_track.place(x=0, y=0)
+
+def close_track():
+    global image_track
+    image_track.place(x=700, y=-900)
+
 def menu_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
         print('start')
@@ -116,6 +131,10 @@ def Phase_doing():
 def battle():
     pass
 
+def motion(event):
+    if (event.x < 50)  and (event.y < 50):
+        show_track()
+
 def scroll_up(event):
     map_up()
     for u in all_unites:
@@ -128,7 +147,10 @@ def scroll_down(event):
         
 def main_click(event):
     global game_proc
-    
+
+    if event.x < 710 and event.y < 50 and event.x > 660:
+        close_track()
+
     if game_proc=='choise':
         game_proc=choise_house_click(event.x, event.y)
         
@@ -146,6 +168,7 @@ def main_click(event):
         game_proc='start_game'
         barateon.status='player'
         show_map(canv)
+        create_track()
 
         player_status=barateon
         Phase_Plans()
@@ -154,6 +177,7 @@ def main_click(event):
         game_proc='start_game'
         martell.status='player'
         show_map(canv)
+        create_track()
         player_status=martell
         Phase_Plans()
 
@@ -161,6 +185,7 @@ def main_click(event):
         game_proc='start_game'
         tirrel.status='player'
         show_map(canv)
+        create_track()
         player_status=tirrel
         Phase_Plans()
 
@@ -169,6 +194,7 @@ def main_click(event):
         game_proc='start_game'
         lannister.status='player'
         show_map(canv)
+        create_track()
         player_status=lannister
         Phase_Plans()
 
@@ -176,6 +202,7 @@ def main_click(event):
         game_proc='start_game'
         greydjoy.status='player'
         show_map(canv)
+        create_track()
         player_status=greydjoy
         Phase_Plans()
 
@@ -183,6 +210,7 @@ def main_click(event):
         game_proc='start_game'
         stark.status='player'
         show_map(canv)
+        create_track()
         player_status=stark
         Phase_Plans()
     
@@ -205,7 +233,8 @@ butX2=0.6
 butY1=0.3
 butY2=0.35
 butShag=0.15
-global images, images_arm
+global images, images_arm, track_status
+track_status = 0
 images = []
 
 game_proc='menu'
@@ -222,5 +251,5 @@ menu_draw(canv)
 root.bind('<Button-1>', main_click)
 root.bind('<Button-4>', scroll_down)
 root.bind('<Button-5>', scroll_up)
-
+root.bind('<Motion>', motion)
 root.mainloop()
