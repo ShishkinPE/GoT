@@ -1,0 +1,143 @@
+from tkinter import *
+from math import *
+from random import *
+from time import *
+from menu import*
+from consts import *
+from Territory import *
+from Grapica import *
+from BaseGame import *
+
+game_proc='menu'
+player_status='niht'
+
+class army:
+    def __init__(self, people_num, knight_num, ship_num, mashine_num, place, owner):
+        self.people_num = people_num
+        self.knight_num = knight_num
+        self.ship_num = ship_num
+        self.mashine_num = mashine_num
+        self.place = place
+        self.owner = owner
+
+class house:
+    def __init__(self, name, food, castle_num, status, army, territory):
+        self.name = name
+        self.status = status #'player' or 'comp' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
+        self.food = food
+        self.castle_num = castle_num
+        self.money = 5
+        self.army = army #это !!массив!! с элементами по количеству отрядов в армиях, нужен для расчёта снабжения
+
+
+
+
+barateon=house('barateon', 2, 1, 'comp', [], [])
+martell=house('martell', 2, 1, 'comp', [], [])
+tirrel=house('tirrel', 2, 1, 'comp', [], [])
+lannister=house('lannister', 2, 1, 'comp', [], [])
+greydjoy=house('gredjoy', 2, 1, 'comp', [], [])
+stark=house('stark', 1, 2, 'comp', [], [])
+
+def Phase_Vesteros():
+    pass
+
+def Phase_Plans():
+    pass
+
+def Phase_doing():
+    pass
+
+def battle():
+    pass
+
+def scroll_up(event):
+    map_up()
+
+def scroll_down(event):
+    map_down()
+        
+def main_click(event):
+    global game_proc
+    
+    if game_proc=='choise':
+        game_proc=choise_house_click(event.x, event.y)
+        
+    if game_proc=='menu':
+        game_proc=menu_click(event.x, event.y)
+        if game_proc=='choise':
+            menu_house_draw(canv)
+        if game_proc=='load':
+            pass
+        
+    if game_proc=='help':
+        pass
+
+    if game_proc=='barateon':
+        game_proc='start_game'
+        barateon.status='player'
+        show_map(canv)
+        show_army(arm1, canv)
+
+        player_status=barateon
+        Phase_Plans()
+
+    if game_proc=='martell':
+        game_proc='start_game'
+        martell.status='player'
+        show_map(canv)
+        player_status=martell
+        Phase_Plans()
+
+    if game_proc=='tirrel':
+        game_proc='start_game'
+        tirrel.status='player'
+        show_map(canv)
+        player_status=tirrel
+        Phase_Plans()
+
+    if game_proc=='lannister':
+        #lannisters == pidors
+        game_proc='start_game'
+        lannister.status='player'
+        show_map(canv)
+        player_status=lannister
+        Phase_Plans()
+
+    if game_proc=='greydjoy':
+        game_proc='start_game'
+        greydjoy.status='player'
+        show_map(canv)
+        player_status=greydjoy
+        Phase_Plans()
+
+    if game_proc=='stark':
+        game_proc='start_game'
+        stark.status='player'
+        show_map(canv)
+        player_status=stark
+        Phase_Plans()
+    
+    print(game_proc)
+all_armies=[]
+map_y=0
+root=Tk()
+root.geometry(str(SX())+'x'+str(SY()))
+canv = Canvas(root,bg='white')
+canv.pack(fill = BOTH, expand = 1)
+arm1=army(5,0,0,0,winterfall,'stark')
+
+
+root.bind('<Button-1>', main_click)
+root.bind('<Button-4>', scroll_down)
+root.bind('<Button-5>', scroll_up)
+
+menu_draw(root)
+
+
+
+
+
+
+
+root.mainloop()
