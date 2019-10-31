@@ -132,7 +132,8 @@ def battle():
     pass
 
 def motion(event):
-    if (event.x < 50)  and (event.y < 50):
+    global h
+    if (event.x < 50)  and (event.y < 50 - h):
         show_track()
 
 def scroll_up(event):
@@ -146,9 +147,8 @@ def scroll_down(event):
         u.move()
         
 def main_click(event):
-    global game_proc
-
-    if event.x < 710 and event.y < 50 and event.x > 660:
+    global game_proc, h
+    if event.x < 710 and event.y < 50  and event.x > 660:
         close_track()
 
     if game_proc=='choise':
