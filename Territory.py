@@ -11,6 +11,9 @@ class cell:
         self.r=40 #radius knopki
         self.army_x=army_x
         self.army_y=army_y
+
+    def __eq__(self, other):
+        return  self is other
         
 winterfall=cell('winterfall', 1, 1, 2, [], 'earth', 530, 420, 780,300)
 winterfall_port=cell('winterfall_port', 0, 0, 0, [], 'port', 360, 280, 360, 280)
