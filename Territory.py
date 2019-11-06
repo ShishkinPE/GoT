@@ -14,6 +14,13 @@ class cell:
 
     def __eq__(self, other):
         return  self is other
+
+    def owner(self, smb, all_unites):
+        r = 0
+        for u in all_unites:
+            if u.place == self and u.owner == smb:
+                r = True
+        return r
         
 winterfall=cell('winterfall', 1, 1, 2, [], 'earth', 530, 420, 780,300)
 winterfall_port=cell('winterfall_port', 0, 0, 0, [], 'port', 360, 280, 360, 280)
@@ -22,7 +29,7 @@ belaya_gavan=cell('belaya_gavan',0,0,1,[],'earth',800, 500, 750, 570)
 white_port=cell('belaya_gavan',0,0,0,[],'port',807, 755, 807, 755)
 cherniy_zamok=cell('cherniy_zamok',0,1,0,[],'earth',785, 50, 630, 160)
 karhold=cell('karhold',0,1,0,[],'earth', 965, 205, 1010, 340)
-drozhashee_more=cell('drozhashee_more',0,0,0,[],'whater', 1200, 580,1175,584)
+drozhashee_more=cell('drozhashee_more',0,0,0,[],'whater', 1218, 499, 1175, 584)
 vdoviy_dozor=cell('vdoviy_dozor',1,0,0,[],'earth',950,577,879,624)
 uzkoe_more=cell('uzkoe_more',0,0,0,[],'whater',1221,773,1015,761)
 ledoviy_zaliv=cell('ledyanoy_zaliv',0,0,0,[],'whater',67,179,98,368)
@@ -80,5 +87,6 @@ karhold.sosed=[winterfall,cherniy_zamok, drozhashee_more]
 kamenniy_bereg.sosed=[winterfall, ledoviy_zaliv]
 belaya_gavan.sosed=[winterfall,white_port,vdoviy_dozor,drozhashee_more]
 
-all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan, drozhashee_more, winterfall_port, uzkoe_more]
+all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan, drozhashee_more, winterfall_port,
+                 uzkoe_more, white_port, karhold, vdoviy_dozor, ledoviy_zaliv, kamenniy_bereg ]
 winterfall.sosed.append(winterfall_port)

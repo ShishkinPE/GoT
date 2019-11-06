@@ -5,6 +5,225 @@ from time import *
 from consts import *
 from Territory import *
 
+class command:
+    def close(self):
+        if self.place == 'niht':
+            self.id.place(x=-100, y=-100)
+
+    def show(self):
+        global image_map, root, player_status, h, game_proc
+        if self.place == 'niht':
+            if player_status == self.owner and game_proc == 'phase_plans':
+                self.id.place(x = self.x0, y = self.y0 - h)
+            else:
+                self.id.place(x=-100, y=-100)
+        else:
+            self.id.place(x = self.place.x - 20, y = self.place.y - 50)
+
+    def give_command(self, event):
+        global all_commands, all_territories
+        z=0
+        if event.widget == self.id:
+            for c in all_commands:
+                c.clicked = 0
+            self.clicked = 1
+        for t in all_territories:
+            if t.owner(player_status, all_unites) and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
+                for c in all_commands:
+                    if c.place == t:
+                        tt = self.place
+                        c.place = tt
+                        self.place = t
+                        c.show()
+                        z = 1
+                if z == 0:
+                    self.place = t
+                self.show()
+
+class attak(command):
+
+    def __init__(self, power, owner, x0, y0):
+        global  image_map
+        self.type = 'attak'
+        self.x0 = x0
+        self.y0 = y0
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st=0
+        if power == 1:
+            self.st = 1
+        global h, root
+        if power == -1:
+            path1 = "media/commands/attak(-1).gif"
+        elif power == 0:
+            path1 = "media/commands/attak(0).gif"
+        elif power == 1:
+            path1 = "media/commands/attak(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+    def doing(self, event):
+        pass
+
+class boost(command):
+    def doing(self, event):
+        pass
+
+    def __init__(self, power, owner, x0, y0):
+        global  image_map
+        self.type = 'boost'
+        self.x0 = x0
+        self.y0 = y0
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/boost.gif"
+        elif power == 1:
+            path1 = "media/commands/boost(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+class defense(command):
+    def doing(self,event):
+        pass
+    def __init__(self, power, owner, x0, y0):
+        global  image_map
+        self.type = 'defense'
+        self.x0 = x0
+        self.y0 = y0
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st=0
+        if power == 2:
+            self.st = 1
+        global h, root
+        if power == 1:
+            path1 = "media/commands/defense.gif"
+        elif power == 2:
+            path1 = "media/commands/defense(+2).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+class fire(command):
+
+    def __init__(self, power, owner, x0, y0):
+        global  image_map
+        self.type = 'fire'
+        self.x0 = x0
+        self.y0 = y0
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/fire.gif"
+        elif power == 1:
+            path1 = "media/commands/fire(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+    def doing(self, event):
+        global all_commands, all_territories, all_unites, player_status
+        if event.widget == self.id and self.owner == player_status:
+            for c in all_commands:
+                c.clicked = 0
+            self.clicked = 1
+        if self.clicked == 1:
+            for c in all_commands:
+                if event.widget == c.id and c.owner != player_status and (c.type == 'boost' or c.type == 'fire'or (c.type == 'defense' and self.st == 1) or c.type == 'money_command'):
+                    self.place = 'niht'
+                    c.place = 'niht'
+                    c.show()
+                    self.show()
+
+class money_command(command):
+    def doing(self, event):
+        pass
+
+    def __init__(self, power, owner, x0, y0):
+        global  image_map
+        self.type = 'money_command'
+        self.x0 = x0
+        self.y0 = y0
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/money_command.gif"
+        elif power == 1:
+            path1 = "media/commands/money_command(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+class unit:
+    def __init__(self, unit_type, place, owner, place_number):
+        global h, image_map, images, all_unites
+        self.unit_type=unit_type
+        self.place = place
+        self.owner = owner
+        self.place_number = place_number
+
+        if self.owner == stark:
+            path1 = "media/test.gif"
+        if self.owner == greydjoy:
+            path1 = "media/test-1.gif"
+        self.img = PhotoImage(file = path1)
+        images.append(self.img)
+        self.id = Label(image_map, image = self.img)
+
+        num_unit = 1
+        for u in all_unites:
+            if self.place == u.place:
+                num_unit += 1
+        self.id.place(x = (self.place.army_x - 45 * num_unit // 2) + 45 * self.place_number, y = self.place.army_y)
+
+    def replace(self):
+        global h, image_map, images, all_unites
+        for u in all_unites:
+            if self.place == u.place:
+                num_unit += 1
+        self.id.place(x=(self.place.army_x - 45 * num_unit // 2) + 45 * self.place_number, y=self.place.army_y)
+
+class house:
+    def __init__(self, name, food, castle_num, status, army, territory):
+        self.name = name
+        self.status = status #'player' or 'comp' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
+        self.food = food
+        self.castle_num = castle_num
+        self.money = 5
+        self.army = army
+
+    def __eq__(self, other):
+        return self is other
+
 def menu_draw(canv):
     global images, image_menu
     path="media/menu.gif"
@@ -22,7 +241,18 @@ def menu_house_draw(canv):
     image_house.place(x = 0,y = 0)
 
 def create_unites():
-    pass
+    """create start unites u == unit s == stark r == greydjoy"""
+    global  all_unites
+    us1 = unit('knight', winterfall, stark, 1)
+    us2 = unit('footman', winterfall, stark, 2)
+    us3 = unit('footman', belaya_gavan, stark,1)
+    us4 = unit('ship', drozhashee_more, stark, 1)
+    ug1 = unit('test', rov_keylin, greydjoy,1)
+    all_unites.append(us1)
+    all_unites.append(us2)
+    all_unites.append(us3)
+    all_unites.append(us4)
+    all_unites.append(ug1)
 
 def create_track():
     global images, image_track
@@ -76,7 +306,6 @@ def show_map(canv):
     image_map.place(x=0, y=0)
     image_menu.place(x=-10000, y=0)
     image_house.place(x=-10000, y=0)
-    Pasha = unit('test', winterfall, stark, 1)
 
 def map_up():
     global h
@@ -89,187 +318,6 @@ def map_down():
     if h < 0:
         h = h + 15
     image_map.place(x=0, y=h)
-
-class command:
-    def close(self):
-        if self.place == 'niht':
-            self.id.place(x=-100, y=-100)
-
-    def show(self):
-        global image_map, root, player_status, h
-        if self.place == 'niht':
-            if player_status == self.owner:
-                self.id.place(x = self.x0, y = self.y0 - h)
-            else:
-                self.id.place(x=-100, y=-100)
-        else:
-            self.id.place(x = self.place.x - 20, y = self.place.y - 50)
-
-    def give_command(self, event):
-        global all_commands, all_territories
-        z=0
-        if event.widget == self.id:
-            for c in all_commands:
-                c.clicked = 0
-            self.clicked = 1
-        for t in all_territories:
-            if event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked==1:
-
-                for c in all_commands:
-                    if c.place == t:
-                        tt = self.place
-                        c.place = tt
-                        self.place = t
-                        c.show()
-                        z = 1
-                if z == 0:
-                    self.place = t
-                self.show()
-
-class attak(command):
-
-    def __init__(self, power, owner, x0, y0):
-        global  image_map
-        self.x0 = x0
-        self.y0 = y0
-        self.clicked = 0
-        self.place = 'niht'
-        self.power = power
-        self.owner = owner
-        self.x = -100
-        self.y = 100
-        self.st=0
-        if power == 1:
-            self.st = 1
-        global h, root
-        if power == -1:
-            path1 = "media/commands/attak(-1).gif"
-        elif power == 0:
-            path1 = "media/commands/attak(0).gif"
-        elif power == 1:
-            path1 = "media/commands/attak(+1).gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.show()
-
-class boost(command):
-
-    def __init__(self, power, owner, x0, y0):
-        global  image_map
-        self.x0 = x0
-        self.y0 = y0
-        self.clicked = 0
-        self.place = 'niht'
-        self.power = power
-        self.owner = owner
-        self.x = -100
-        self.y = 100
-        self.st = power
-        global h, root
-        if power == 0:
-            path1 = "media/commands/boost.gif"
-        elif power == 1:
-            path1 = "media/commands/boost(+1).gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.show()
-
-class defense(command):
-
-    def __init__(self, power, owner, x0, y0):
-        global  image_map
-        self.x0 = x0
-        self.y0 = y0
-        self.clicked = 0
-        self.place = 'niht'
-        self.power = power
-        self.owner = owner
-        self.x = -100
-        self.y = 100
-        self.st=0
-        if power == 2:
-            self.st = 1
-        global h, root
-        if power == 1:
-            path1 = "media/commands/defense.gif"
-        elif power == 2:
-            path1 = "media/commands/defense(+2).gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.show()
-
-class fire(command):
-
-    def __init__(self, power, owner, x0, y0):
-        global  image_map
-        self.x0 = x0
-        self.y0 = y0
-        self.clicked = 0
-        self.place = 'niht'
-        self.power = power
-        self.owner = owner
-        self.x = -100
-        self.y = 100
-        self.st = power
-        global h, root
-        if power == 0:
-            path1 = "media/commands/fire.gif"
-        elif power == 1:
-            path1 = "media/commands/fire(+1).gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.show()
-
-class money_command(command):
-
-    def __init__(self, power, owner, x0, y0):
-        global  image_map
-        self.x0 = x0
-        self.y0 = y0
-        self.clicked = 0
-        self.place = 'niht'
-        self.power = power
-        self.owner = owner
-        self.x = -100
-        self.y = 100
-        self.st = power
-        global h, root
-        if power == 0:
-            path1 = "media/commands/money_command.gif"
-        elif power == 1:
-            path1 = "media/commands/money_command(+1).gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.show()
-
-class unit:
-    def __init__(self, unit_type, place, owner, place_number):
-        self.unit_type=unit_type
-        self.place = place
-        self.owner = owner
-        self.place_number = place_number
-
-        global h, image_map
-        path1 = "media/test.gif"
-        self.img = PhotoImage(file = path1)
-        self.id = Label(image_map, image = self.img)
-        self.id.place(x = self.place.army_x, y = self.place.army_y-h)
-
-    def move(self):
-        global h, image_map, images
-        self.id.place(x = self.place.army_x, y = self.place.army_y-h)
-
-class house:
-    def __init__(self, name, food, castle_num, status, army, territory):
-        self.name = name
-        self.status = status #'player' or 'comp' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
-        self.food = food
-        self.castle_num = castle_num
-        self.money = 5
-        self.army = army #это !!массив!! с элементами по количеству отрядов в армиях, нужен для расчёта снабжения
-
-    def __eq__(self, other):
-        return self is other
 
 def phase_plans():
     global game_proc, all_commands, player_status
@@ -396,23 +444,35 @@ def start_game():
         phase_plans()
 
 def main_click(event):
-    global game_proc, h, all_commands
-    create_unites()
+    global game_proc, h, all_commands, all_unites
     if game_proc =='menu':
         menu_1(event.x, event.y)
-
     elif game_proc =='choise':
         game_proc=choise_house_click(event.x, event.y)
         start_game()
     elif game_proc == 'phase_plans':
         for c in all_commands:
             c.give_command(event)
-
+    elif game_proc == 'phase_doing':
+        for c in all_commands:
+            c.doing(event)
 
 def finish_button_click():
     if game_proc=='phase_plans':
         phase_doing()
         print('Хтанол')
+        comp_plans()
+
+def comp_plans():
+    global all_commands
+    for c in all_commands:
+
+        if c.owner == greydjoy and c.type == 'defense' and c.st == 1:
+            c.place = rov_keylin
+            c.show()
+            print('0')
+
+
 
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
@@ -453,8 +513,8 @@ create_command()
 
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
-root.bind('<Button-4>', scroll_down)
-root.bind('<Button-5>', scroll_up)
+image_map.bind('<Button-4>', scroll_down)
+image_map.bind('<Button-5>', scroll_up)
 image_map.bind('<Motion>', motion)
-Finish_button=Button(root, text='Дима мокеев петух', command=finish_button_click)
+Finish_button=Button(root, text = 'Дима мокеев петух', command = finish_button_click)
 root.mainloop()
