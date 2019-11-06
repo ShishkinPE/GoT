@@ -91,14 +91,12 @@ def map_down():
     image_map.place(x=0, y=h)
 
 class command:
-
-
     def show(self):
         global image_map, root
         if self.place == 'niht':
             self.id.place(x = 100, y = 100)
         else:
-            self.id.place(x = self.place.x, y = self.place.y)
+            self.id.place(x = self.place.x - 20, y = self.place.y - 60)
 
     def give_command(self, event):
         global all_commands, all_territories
@@ -121,8 +119,6 @@ class command:
                     self.place = t
                 self.show()
 
-
-
 class attak(command):
 
     def __init__(self, power, owner):
@@ -131,18 +127,103 @@ class attak(command):
         self.place = 'niht'
         self.power = power
         self.owner = owner
-        self.x = 100
+        self.x = -100
         self.y = 100
+        self.st=0
         if power == 1:
             self.st = 1
         global h, root
-        path1 = "media/test.gif"
+        if power == -1:
+            path1 = "media/commands/attak(-1).gif"
+        elif power == 0:
+            path1 = "media/commands/attak(0).gif"
+        elif power == 1:
+            path1 = "media/commands/attak(+1).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
         self.show()
 
+class boost(command):
 
+    def __init__(self, power, owner):
+        global  image_map
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/boost.gif"
+        elif power == 1:
+            path1 = "media/commands/boost(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
 
+class defense(command):
+
+    def __init__(self, power, owner):
+        global  image_map
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st=0
+        if power == 2:
+            self.st = 1
+        global h, root
+        if power == 1:
+            path1 = "media/commands/defense.gif"
+        elif power == 2:
+            path1 = "media/commands/defense(+2).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+class fire(command):
+
+    def __init__(self, power, owner):
+        global  image_map
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/fire.gif"
+        elif power == 1:
+            path1 = "media/commands/fire(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
+
+class money_command(command):
+
+    def __init__(self, power, owner):
+        global  image_map
+        self.clicked = 0
+        self.place = 'niht'
+        self.power = power
+        self.owner = owner
+        self.x = -100
+        self.y = 100
+        self.st = power
+        global h, root
+        if power == 0:
+            path1 = "media/commands/money_command.gif"
+        elif power == 1:
+            path1 = "media/commands/money_command(+1).gif"
+        self.img = PhotoImage(file = path1)
+        self.id = Label(image_map, image = self.img)
+        self.show()
 
 class unit:
     def __init__(self, unit_type, place, owner, place_number):
@@ -178,10 +259,13 @@ def phase_vesteros():
 
 def phase_plans():
     global game_proc, all_commands, player_status
+    game_proc='phase_plans'
     show_commands(player_status)
+    Finish_button.place(x=SX()*0.45, y=SY()*0.9)
 
 def phase_doing():
-    pass
+    global game_proc
+    game_proc='phase_doing'
 
 def create_command():
     global all_houses
@@ -189,9 +273,33 @@ def create_command():
         attak_1=attak(-1, h)
         attak_2=attak(0, h)
         attak_3=attak(1, h)
+        boost_1=boost(0, h)
+        boost_2=boost(0, h)
+        boost_3=boost(1, h)
+        defense_1=defense(1, h)
+        defense_2=defense(1, h)
+        defense_3=defense(2, h)
+        fire_1=fire(0, h)
+        fire_2=fire(0, h)
+        fire_3=fire(1, h)
+        money_command_1=money_command(0, h)
+        money_command_2=money_command(0, h)
+        money_command_3=money_command(1, h)
         all_commands.append(attak_1)
         all_commands.append(attak_2)
         all_commands.append(attak_3)
+        all_commands.append(boost_1)
+        all_commands.append(boost_2)
+        all_commands.append(boost_3)
+        all_commands.append(defense_1)
+        all_commands.append(defense_2)
+        all_commands.append(defense_3)
+        all_commands.append(fire_1)
+        all_commands.append(fire_2)
+        all_commands.append(fire_3)
+        all_commands.append(money_command_1)
+        all_commands.append(money_command_2)
+        all_commands.append(money_command_3)
 
 def battle():
     pass
@@ -272,16 +380,15 @@ def start_game():
 def main_click(event):
     global game_proc, h, all_commands
     create_unites()
-    for c in all_commands:
-        c.give_command(event)
     if game_proc =='menu':
         menu_1(event.x, event.y)
 
     elif game_proc =='choise':
         game_proc=choise_house_click(event.x, event.y)
         start_game()
-    elif game_proc == 'plane_phase':
-        pass
+    elif game_proc == 'phase_plans':
+        for c in all_commands:
+            c.give_command(event)
 
 def show_commands(player):
     global all_commands
@@ -289,7 +396,10 @@ def show_commands(player):
         if c.owner == player:
             c.show()
 
-
+def finish_button_click():
+    if game_proc=='phase_plans':
+        phase_doing()
+        print('Хтанол')
 
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
@@ -333,4 +443,5 @@ root.bind('<Button-1>', main_click)
 root.bind('<Button-4>', scroll_down)
 root.bind('<Button-5>', scroll_up)
 image_map.bind('<Motion>', motion)
+Finish_button=Button(root, text='Дима мокеев петух', command=finish_button_click)
 root.mainloop()

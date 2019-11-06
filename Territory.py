@@ -35,7 +35,7 @@ zaliv_zheleznyh_ludey=cell('zaliv_zheleznyh_ludey',0,0,0,[],'whater',0,0,0,0)
 payk=cell('payk',1,1,2,[],'earth',0,0,0,0)
 sigard=cell('sigard',1,1,2,[],'earth',0,0,0,0)
 bliznetsy=cell('blizhetsy',0,1,0,[],'earth',0,0,0,0)
-pesti=cell('persti',1,0,0,[],'earth',0,0,0,0)
+persti=cell('persti',1,0,0,[],'earth',0,0,0,0)
 lunnie_gori=cell('lunnie_gori',1,0,0,[],'earth',0,0,0,0)
 orlinoe_gnezdo=cell('orlinoe_gnezdo',1,1,1,[],'earth',0,0,0,0)
 riveran=cell('riveran',1,1,2,[],'earth',0,0,0,0)
@@ -80,5 +80,5 @@ karhold.sosed=[winterfall,cherniy_zamok, drozhashee_more]
 kamenniy_bereg.sosed=[winterfall, ledoviy_zaliv]
 belaya_gavan.sosed=[winterfall,white_port,vdoviy_dozor,drozhashee_more]
 
-all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan]
+all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan, drozhashee_more, winterfall_port, uzkoe_more]
 winterfall.sosed.append(winterfall_port)
