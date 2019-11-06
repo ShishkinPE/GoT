@@ -91,15 +91,19 @@ def map_down():
     image_map.place(x=0, y=h)
 
 class command:
+    def close(self):
+        if self.place == 'niht':
+            self.id.place(x=-100, y=-100)
+
     def show(self):
-        global image_map, root, player_status
+        global image_map, root, player_status, h
         if self.place == 'niht':
             if player_status == self.owner:
-                self.id.place(x = self.x0, y = self.y0)
+                self.id.place(x = self.x0, y = self.y0 - h)
             else:
                 self.id.place(x=-100, y=-100)
         else:
-            self.id.place(x = self.place.x - 20, y = self.place.y - 60)
+            self.id.place(x = self.place.x - 20, y = self.place.y - 50)
 
     def give_command(self, event):
         global all_commands, all_territories
@@ -270,7 +274,6 @@ class house:
 def phase_plans():
     global game_proc, all_commands, player_status
     game_proc='phase_plans'
-    show_commands(player_status)
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
 
 def phase_doing():
@@ -280,21 +283,21 @@ def phase_doing():
 def create_command():
     global all_houses
     for h in all_houses:
-        attak_1=attak(-1, h, 150, 40)
-        attak_2=attak(0, h, 150, 85)
-        attak_3=attak(1, h, 150, 130)
-        boost_1=boost(0, h, 195, 40)
-        boost_2=boost(0, h, 195, 85)
-        boost_3=boost(1, h, 195, 130)
-        defense_1=defense(1, h, 240, 40)
-        defense_2=defense(1, h, 240, 85)
-        defense_3=defense(2, h, 240, 130)
-        fire_1=fire(0, h, 285, 40)
-        fire_2=fire(0, h, 285, 85)
-        fire_3=fire(1, h, 285, 130)
-        money_command_1=money_command(0, h, 330, 40)
-        money_command_2=money_command(0, h, 330, 85)
-        money_command_3=money_command(1, h, 330, 130)
+        attak_1=attak(-1, h, SX() - 45, 0)
+        attak_2=attak(0, h, SX() - 45, 45)
+        attak_3=attak(1, h, SX() - 45, 90)
+        boost_1=boost(0, h, SX() - 90, 0)
+        boost_2=boost(0, h, SX() - 90, 45)
+        boost_3=boost(1, h, SX() - 90, 90)
+        defense_1=defense(1, h, SX() - 135, 0)
+        defense_2=defense(1, h, SX() - 135, 45)
+        defense_3=defense(2, h, SX() - 135, 90)
+        fire_1=fire(0, h, SX() - 180, 0)
+        fire_2=fire(0, h, SX() - 180, 45)
+        fire_3=fire(1, h, SX() - 180, 90)
+        money_command_1=money_command(0, h, SX() - 225, 0)
+        money_command_2=money_command(0, h, SX() - 225, 45)
+        money_command_3=money_command(1, h, SX() - 225, 90)
         all_commands.append(attak_1)
         all_commands.append(attak_2)
         all_commands.append(attak_3)
@@ -312,12 +315,20 @@ def create_command():
         all_commands.append(money_command_3)
 
 def motion(event):
-    global h, game_proc
+    global h, game_proc, all_commands
     if game_proc != 'menu' and game_proc != 'choise':
         if (event.x < 50)  and (event.y < 50 - h):
             show_track()
         else:
             close_track()
+
+    if game_proc == 'phase_plans':
+        if (event.x > SX() - 50)  and (event.y < 50 - h):
+            for c in all_commands:
+                c.show()
+        elif (event.x < SX() - 330)  or (event.y > 135 - h):
+            for c in all_commands:
+                c.close()
 
 def scroll_up(event):
     map_up()
@@ -397,11 +408,6 @@ def main_click(event):
         for c in all_commands:
             c.give_command(event)
 
-def show_commands(player):
-    global all_commands
-    for c in all_commands:
-        if c.owner == player:
-            c.show()
 
 def finish_button_click():
     if game_proc=='phase_plans':
