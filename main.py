@@ -92,9 +92,12 @@ def map_down():
 
 class command:
     def show(self):
-        global image_map, root
+        global image_map, root, player_status
         if self.place == 'niht':
-            self.id.place(x = 100, y = 100)
+            if player_status == self.owner:
+                self.id.place(x = self.x0, y = self.y0)
+            else:
+                self.id.place(x=-100, y=-100)
         else:
             self.id.place(x = self.place.x - 20, y = self.place.y - 60)
 
@@ -121,8 +124,10 @@ class command:
 
 class attak(command):
 
-    def __init__(self, power, owner):
+    def __init__(self, power, owner, x0, y0):
         global  image_map
+        self.x0 = x0
+        self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -145,8 +150,10 @@ class attak(command):
 
 class boost(command):
 
-    def __init__(self, power, owner):
+    def __init__(self, power, owner, x0, y0):
         global  image_map
+        self.x0 = x0
+        self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -165,8 +172,10 @@ class boost(command):
 
 class defense(command):
 
-    def __init__(self, power, owner):
+    def __init__(self, power, owner, x0, y0):
         global  image_map
+        self.x0 = x0
+        self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -187,8 +196,10 @@ class defense(command):
 
 class fire(command):
 
-    def __init__(self, power, owner):
+    def __init__(self, power, owner, x0, y0):
         global  image_map
+        self.x0 = x0
+        self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -207,8 +218,10 @@ class fire(command):
 
 class money_command(command):
 
-    def __init__(self, power, owner):
+    def __init__(self, power, owner, x0, y0):
         global  image_map
+        self.x0 = x0
+        self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -254,9 +267,6 @@ class house:
     def __eq__(self, other):
         return self is other
 
-def phase_vesteros():
-    pass
-
 def phase_plans():
     global game_proc, all_commands, player_status
     game_proc='phase_plans'
@@ -270,21 +280,21 @@ def phase_doing():
 def create_command():
     global all_houses
     for h in all_houses:
-        attak_1=attak(-1, h)
-        attak_2=attak(0, h)
-        attak_3=attak(1, h)
-        boost_1=boost(0, h)
-        boost_2=boost(0, h)
-        boost_3=boost(1, h)
-        defense_1=defense(1, h)
-        defense_2=defense(1, h)
-        defense_3=defense(2, h)
-        fire_1=fire(0, h)
-        fire_2=fire(0, h)
-        fire_3=fire(1, h)
-        money_command_1=money_command(0, h)
-        money_command_2=money_command(0, h)
-        money_command_3=money_command(1, h)
+        attak_1=attak(-1, h, 150, 40)
+        attak_2=attak(0, h, 150, 85)
+        attak_3=attak(1, h, 150, 130)
+        boost_1=boost(0, h, 195, 40)
+        boost_2=boost(0, h, 195, 85)
+        boost_3=boost(1, h, 195, 130)
+        defense_1=defense(1, h, 240, 40)
+        defense_2=defense(1, h, 240, 85)
+        defense_3=defense(2, h, 240, 130)
+        fire_1=fire(0, h, 285, 40)
+        fire_2=fire(0, h, 285, 85)
+        fire_3=fire(1, h, 285, 130)
+        money_command_1=money_command(0, h, 330, 40)
+        money_command_2=money_command(0, h, 330, 85)
+        money_command_3=money_command(1, h, 330, 130)
         all_commands.append(attak_1)
         all_commands.append(attak_2)
         all_commands.append(attak_3)
@@ -300,9 +310,6 @@ def create_command():
         all_commands.append(money_command_1)
         all_commands.append(money_command_2)
         all_commands.append(money_command_3)
-
-def battle():
-    pass
 
 def motion(event):
     global h, game_proc
