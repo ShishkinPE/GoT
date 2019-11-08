@@ -27,8 +27,21 @@ class command:
             for c in all_commands:
                 c.clicked = 0
             self.clicked = 1
+        stars = 0
+        for c in all_commands:
+            if c.st == 1 and c.place != 'niht':
+                stars += 1
+        pst = 0
+        if player_status.voron == 1 or player_status.voron == 2:
+            pst = 3
+        if player_status.voron == 3:
+            pst = 2
+        if player_status.voron == 4:
+            pst == 1
+        if player_status == lannister:
+            exit()
         for t in all_territories:
-            if t.owner(player_status, all_unites) and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
+            if (pst > stars or self.st == 0) and t.owner(player_status, all_unites) and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
                 for c in all_commands:
                     if c.place == t:
                         tt = self.place
@@ -68,7 +81,27 @@ class attak(command):
         self.show()
 
     def doing(self, event):
-        pass
+        global all_commands, all_territories, all_unites, player_status
+        if event.widget == self.id and self.owner == player_status:
+            for c in all_commands:
+                c.clicked = 0
+            for u in all_unites:
+                u.clicked = 0
+                u.show()
+            self.clicked = 1
+        if self.clicked == 1:
+            for u in all_unites:
+                if event.widget == u.id and u.owner == self.owner and u.place == self.place:
+                    if u.clicked == 0:
+                        u.clicked = 1
+                    else:
+                        u.clicked = 0
+                    u.show()
+        for t in all_territories:
+            if event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15:
+                for u in all_unites:
+                    if u.clicked == 1 and u.can_attak(t):
+                        u.target = t
 
 class boost(command):
     def doing(self, event):
@@ -146,13 +179,14 @@ class fire(command):
 
     def doing(self, event):
         global all_commands, all_territories, all_unites, player_status
+        print('do')
         if event.widget == self.id and self.owner == player_status:
             for c in all_commands:
                 c.clicked = 0
             self.clicked = 1
         if self.clicked == 1:
             for c in all_commands:
-                if event.widget == c.id and c.owner != player_status and (c.type == 'boost' or c.type == 'fire'or (c.type == 'defense' and self.st == 1) or c.type == 'money_command'):
+                if event.widget == c.id and c.owner != self.owner and (c.type == 'boost' or c.type == 'fire'or (c.type == 'defense' and self.st == 1) or c.type == 'money_command'):
                     self.place = 'niht'
                     c.place = 'niht'
                     c.show()
@@ -188,9 +222,10 @@ class unit:
         global h, image_map, images, all_unites
         self.unit_type=unit_type
         self.place = place
+        self.target = place
         self.owner = owner
         self.place_number = place_number
-
+        self.clicked = 0
         if self.owner == stark:
             path1 = "media/test.gif"
         if self.owner == greydjoy:
@@ -199,27 +234,29 @@ class unit:
         images.append(self.img)
         self.id = Label(image_map, image = self.img)
 
-        num_unit = 1
-        for u in all_unites:
-            if self.place == u.place:
-                num_unit += 1
-        self.id.place(x = (self.place.army_x - 45 * num_unit // 2) + 45 * self.place_number, y = self.place.army_y)
+    def can_attak(self,target):
+        return True
 
-    def replace(self):
+    def show(self):
         global h, image_map, images, all_unites
+        i=0
         for u in all_unites:
             if self.place == u.place:
-                num_unit += 1
-        self.id.place(x=(self.place.army_x - 45 * num_unit // 2) + 45 * self.place_number, y=self.place.army_y)
+                u.place_number = i
+                i += 1
+        self.id.place(x=(self.place.army_x - 45 * i // 2) + 45 * self.place_number, y=self.place.army_y - self.clicked * 5)
 
 class house:
-    def __init__(self, name, food, castle_num, status, army, territory):
+    def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
         self.name = name
         self.status = status #'player' or 'comp' возможно дальше ветвление числа денег при инициализации в зависимости от статуса
         self.food = food
         self.castle_num = castle_num
         self.money = 5
         self.army = army
+        self.tron = tron
+        self.sword = sword
+        self.voron = voron
 
     def __eq__(self, other):
         return self is other
@@ -253,6 +290,8 @@ def create_unites():
     all_unites.append(us3)
     all_unites.append(us4)
     all_unites.append(ug1)
+    for u in all_unites:
+        u.show()
 
 def create_track():
     global images, image_track
@@ -323,10 +362,17 @@ def phase_plans():
     global game_proc, all_commands, player_status
     game_proc='phase_plans'
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
+    Finish_button.config(text='Приказы отданы.')
 
 def phase_doing():
     global game_proc
-    game_proc='phase_doing'
+    if game_proc == 'phase_plans':
+        game_proc='phase_doing_fire'
+        print(game_proc)
+        Finish_button.config(text='Набеги завершены')
+    if game_proc == 'phase_doing_attak':
+        Finish_button.config(text='В поход!')
+
 
 def create_command():
     global all_houses
@@ -445,23 +491,46 @@ def start_game():
 
 def main_click(event):
     global game_proc, h, all_commands, all_unites
+    print(game_proc)
     if game_proc =='menu':
         menu_1(event.x, event.y)
     elif game_proc =='choise':
         game_proc=choise_house_click(event.x, event.y)
-        start_game()
+        if game_proc != 'choise':
+            start_game()
     elif game_proc == 'phase_plans':
         for c in all_commands:
             c.give_command(event)
-    elif game_proc == 'phase_doing':
+    elif game_proc == 'phase_doing_fire':
+        print('in')
         for c in all_commands:
-            c.doing(event)
+            if c.type == 'fire':
+                c.doing(event)
+    elif game_proc == 'phase_doing_attak':
+        for c in all_commands:
+            if c.type == 'attak':
+                c.doing(event)
+
 
 def finish_button_click():
-    if game_proc=='phase_plans':
+    global game_proc, all_unites
+    if game_proc == 'phase_plans':
         phase_doing()
-        print('Хтанол')
         comp_plans()
+    elif game_proc == 'phase_doing_fire':
+        game_proc='phase_doing_attak'
+        phase_doing()
+    elif game_proc == 'phase_doing_attak':
+        for u in all_unites:
+            u.place = u.target
+            u.clicked = 0
+        for u in all_unites:
+            u.show()
+        for c in all_commands:
+            if c.clicked == 1:
+                c.clicked = 0
+                c.place = 'niht'
+                c.show()
 
 def comp_plans():
     global all_commands
@@ -473,18 +542,17 @@ def comp_plans():
             print('0')
 
 
-
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
 canv = Canvas(root,bg='white')
 canv.pack(fill = BOTH, expand = 1)
 
-barateon = house('barateon', 2, 1, 'comp', [], [])
-martell = house('martell', 2, 1, 'comp', [], [])
-tirrel = house('tirrel', 2, 1, 'comp', [], [])
-lannister = house('lannister', 2, 1, 'comp', [], [])
-greydjoy = house('gredjoy', 2, 1, 'comp', [], [])
-stark = house('stark', 1, 2, 'comp', [], [])
+barateon = house('barateon', 2, 1, 'comp', [], [], 1, 5, 4)
+martell = house('martell', 2, 1, 'comp', [], [], 5, 4, 3)
+tirrel = house('tirrel', 2, 1, 'comp', [], [], 6, 2, 5)
+lannister = house('lannister', 2, 1, 'comp', [], [], 2, 6, 1)
+greydjoy = house('gredjoy', 2, 1, 'comp', [], [], 4, 1, 6)
+stark = house('stark', 1, 2, 'comp', [], [], 3, 3, 2)
 
 butX1=0.4
 butX2=0.6
