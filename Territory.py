@@ -81,11 +81,13 @@ east_summer_more=cell('',0,0,0,[],'whater',0,0,0,0)
 dorn_more=cell('',0,0,0,[],'whater',0,0,0,0)
 gubitelnie_vali=cell('',0,0,0,[],'whater',0,0,0,0)
 chernovod_zaliv=cell('',0,0,0,[],'whater',0,0,0,0)
+
 cherniy_zamok.sosed=[karhold, winterfall,drozhashee_more, ledoviy_zaliv]
 winterfall.sosed=[karhold, belaya_gavan ,drozhashee_more, ledoviy_zaliv, winterfall_port, kamenniy_bereg, rov_keylin, cherniy_zamok]
 karhold.sosed=[winterfall,cherniy_zamok, drozhashee_more]
 kamenniy_bereg.sosed=[winterfall, ledoviy_zaliv]
 belaya_gavan.sosed=[winterfall,white_port,vdoviy_dozor,drozhashee_more]
+drozhashee_more.sosed = [winterfall, cherniy_zamok, uzkoe_more, karhold, vdoviy_dozor, belaya_gavan]
 
 all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan, drozhashee_more, winterfall_port,
                  uzkoe_more, white_port, karhold, vdoviy_dozor, ledoviy_zaliv, kamenniy_bereg ]

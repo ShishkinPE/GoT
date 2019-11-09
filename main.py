@@ -179,7 +179,6 @@ class fire(command):
 
     def doing(self, event):
         global all_commands, all_territories, all_unites, player_status
-        print('do')
         if event.widget == self.id and self.owner == player_status:
             for c in all_commands:
                 c.clicked = 0
@@ -235,8 +234,14 @@ class unit:
         self.id = Label(image_map, image = self.img)
 
     def can_attak(self,target):
-        return True
-
+        global all_territories
+        re = 0
+        for t in self.place.sosed:
+            if t == target:
+                re = 1
+            if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'whater'):
+                re = 0
+        return re
     def show(self):
         global h, image_map, images, all_unites
         i=0
@@ -269,6 +274,34 @@ def menu_draw(canv):
     images.append(img)
     image_menu.place(x = 0,y = 0)
 
+def menu_1(x,y):
+    global game_proc
+    game_proc = menu_click(x, y)
+    if game_proc == 'choise':
+        menu_house_draw(canv)
+    elif game_proc == 'load':
+        exit()
+    elif game_proc == 'help':
+        exit()
+    elif game_proc == 'exit':
+        exit()
+
+def menu_click(x, y):
+    if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
+        print('start')
+        return 'choise'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+butShag) and y < SY() * (butY2 + butShag):
+        print('загрузить')
+        return 'load'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+2*butShag) and y < SY() * (butY2 + 2*butShag):
+        print('help')
+        return 'help'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+3*butShag) and y < SY() * (butY2 + 3*butShag):
+        print('Выход')
+        exit()
+    else:
+        return 'menu'
+
 def menu_house_draw(canv):
     global images, image_house
     path="media/menu-house.gif"
@@ -277,9 +310,34 @@ def menu_house_draw(canv):
     image_house=Label(canv, image=img)
     image_house.place(x = 0,y = 0)
 
-def create_unites():
+def map_up(event):
+    global h
+    if h > -1742:
+        h = h - 15
+    image_map.place(x=0, y=h)
+
+def map_down(event):
+    global h
+    if h < 0:
+        h = h + 15
+    image_map.place(x=0, y=h)
+
+def show_map(canv):
+    global image_map, images, image_menu, image_house
+    image_map.place(x=0, y=0)
+    image_menu.place(x=-10000, y=0)
+    image_house.place(x=-10000, y=0)
+
+def show_track():
+    global image_track
+    image_track.place(x=0, y=0)
+
+def close_track():
+    global image_track
+    image_track.place(x=700, y=-900)
+
+def create_unites(all_unites):
     """create start unites u == unit s == stark r == greydjoy"""
-    global  all_unites
     us1 = unit('knight', winterfall, stark, 1)
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
@@ -299,80 +357,6 @@ def create_track():
     img = PhotoImage(file=path)
     images.append(img)
     image_track = Label(root, image=img)
-
-def show_track():
-    global image_track
-    image_track.place(x=0, y=0)
-
-def close_track():
-    global image_track
-    image_track.place(x=700, y=-900)
-
-def menu_click(x, y):
-    if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
-        print('start')
-        return 'choise'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+butShag) and y < SY() * (butY2 + butShag):
-        print('загрузить')
-        return 'load'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+2*butShag) and y < SY() * (butY2 + 2*butShag):
-        print('help')
-        return 'help'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+3*butShag) and y < SY() * (butY2 + 3*butShag):
-        print('Выход')
-        exit()
-    else:
-        return 'menu'
-
-def choise_house_click(x, y):
-    if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
-        return 'barateon'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1) and y < SY() * (butY2):
-        return 'martell'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+butShag) and y < SY() * (butY2 + butShag):
-        return 'tirrel'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+2*butShag) and y < SY() * (butY2 + 2*butShag):
-        return 'lannister'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+3*butShag) and y < SY() * (butY2 + 3*butShag):
-        return 'greydjoy'
-    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+4*butShag) and y < SY() * (butY2 + 4*butShag):
-        return 'stark'
-    else:
-        return 'choise'
-
-def show_map(canv):
-    global image_map, images, Pasha, image_menu, image_house
-    image_map.place(x=0, y=0)
-    image_menu.place(x=-10000, y=0)
-    image_house.place(x=-10000, y=0)
-
-def map_up():
-    global h
-    if h > -1742:
-        h = h - 15
-    image_map.place(x=0, y=h)
-
-def map_down():
-    global h
-    if h < 0:
-        h = h + 15
-    image_map.place(x=0, y=h)
-
-def phase_plans():
-    global game_proc, all_commands, player_status
-    game_proc='phase_plans'
-    Finish_button.place(x=SX()*0.45, y=SY()*0.9)
-    Finish_button.config(text='Приказы отданы.')
-
-def phase_doing():
-    global game_proc
-    if game_proc == 'phase_plans':
-        game_proc='phase_doing_fire'
-        print(game_proc)
-        Finish_button.config(text='Набеги завершены')
-    if game_proc == 'phase_doing_attak':
-        Finish_button.config(text='В поход!')
-
 
 def create_command():
     global all_houses
@@ -408,43 +392,25 @@ def create_command():
         all_commands.append(money_command_2)
         all_commands.append(money_command_3)
 
-def motion(event):
-    global h, game_proc, all_commands
-    if game_proc != 'menu' and game_proc != 'choise':
-        if (event.x < 50)  and (event.y < 50 - h):
-            show_track()
-        else:
-            close_track()
-
-    if game_proc == 'phase_plans':
-        if (event.x > SX() - 50)  and (event.y < 50 - h):
-            for c in all_commands:
-                c.show()
-        elif (event.x < SX() - 330)  or (event.y > 135 - h):
-            for c in all_commands:
-                c.close()
-
-def scroll_up(event):
-    map_up()
-
-def scroll_down(event):
-    map_down()
-
-def menu_1(x,y):
-    global game_proc
-    game_proc = menu_click(x, y)
-    if game_proc == 'choise':
-        menu_house_draw(canv)
-    elif game_proc == 'load':
-        exit()
-    elif game_proc == 'help':
-        exit()
-    elif game_proc == 'exit':
-        exit()
+def choise_house_click(x, y):
+    if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
+        return 'barateon'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1) and y < SY() * (butY2):
+        return 'martell'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+butShag) and y < SY() * (butY2 + butShag):
+        return 'tirrel'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+2*butShag) and y < SY() * (butY2 + 2*butShag):
+        return 'lannister'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+3*butShag) and y < SY() * (butY2 + 3*butShag):
+        return 'greydjoy'
+    elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+4*butShag) and y < SY() * (butY2 + 4*butShag):
+        return 'stark'
+    else:
+        return 'choise'
 
 def start_game():
-    global game_proc, player_status
-    create_unites()
+    global game_proc, player_status, all_unites, images
+    create_unites(all_unites)
     if game_proc=='barateon':
         barateon.status='player'
         show_map(canv)
@@ -472,7 +438,14 @@ def start_game():
         lannister.status='player'
         show_map(canv)
         create_track()
-        player_status=lannister
+        # DO NOT FIX!!! I need this part of cod
+        for i in range(15):
+            x = randint(100, SX() - 100)
+            y = randint(100, SY() - 100)
+            l = Label(text = 'дима мокеев петух')
+            l.place(x = x, y =y)
+        ########################################
+        player_status = lannister
         phase_plans()
 
     if game_proc=='greydjoy':
@@ -488,6 +461,37 @@ def start_game():
         create_track()
         player_status=stark
         phase_plans()
+
+def phase_plans():
+    global game_proc, all_commands, player_status
+    game_proc='phase_plans'
+    Finish_button.place(x=SX()*0.45, y=SY()*0.9)
+    Finish_button.config(text='Приказы отданы.')
+
+def phase_doing():
+    global game_proc
+    if game_proc == 'phase_plans':
+        game_proc='phase_doing_fire'
+        print(game_proc)
+        Finish_button.config(text='Набеги завершены')
+    if game_proc == 'phase_doing_attak':
+        Finish_button.config(text='В поход!')
+
+def motion(event):
+    global h, game_proc, all_commands
+    if game_proc != 'menu' and game_proc != 'choise':
+        if (event.x < 50)  and (event.y < 50 - h):
+            show_track()
+        else:
+            close_track()
+
+    if game_proc == 'phase_plans':
+        if (event.x > SX() - 50)  and (event.y < 50 - h):
+            for c in all_commands:
+                c.show()
+        elif (event.x < SX() - 330)  or (event.y > 135 - h):
+            for c in all_commands:
+                c.close()
 
 def main_click(event):
     global game_proc, h, all_commands, all_unites
@@ -510,7 +514,6 @@ def main_click(event):
         for c in all_commands:
             if c.type == 'attak':
                 c.doing(event)
-
 
 def finish_button_click():
     global game_proc, all_unites
@@ -581,8 +584,8 @@ create_command()
 
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
-image_map.bind('<Button-4>', scroll_down)
-image_map.bind('<Button-5>', scroll_up)
+image_map.bind('<Button-4>', map_down)
+image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
 Finish_button=Button(root, text = 'Дима мокеев петух', command = finish_button_click)
 root.mainloop()
