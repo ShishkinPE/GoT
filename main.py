@@ -102,6 +102,8 @@ class attak(command):
                 for u in all_unites:
                     if u.clicked == 1 and u.can_attak(t):
                         u.target = t
+                        u.clicked = 0
+                        u.show()
 
 class boost(command):
     def doing(self, event):
@@ -241,7 +243,10 @@ class unit:
                 re = 1
             if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'whater'):
                 re = 0
+        if self.place == target:
+            re = 1
         return re
+
     def show(self):
         global h, image_map, images, all_unites
         i=0
@@ -249,7 +254,7 @@ class unit:
             if self.place == u.place:
                 u.place_number = i
                 i += 1
-        self.id.place(x=(self.place.army_x - 45 * i // 2) + 45 * self.place_number, y=self.place.army_y - self.clicked * 5)
+        self.id.place(x=(self.target.army_x - 45 * i // 2) + 45 * self.place_number, y=self.target.army_y - self.clicked * 5)
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -378,7 +383,6 @@ def create_track():
         track_images.append(l2)
         track_images.append(l3)
         images.append(image)
-
 
 def create_command():
     global all_houses
