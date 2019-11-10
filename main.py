@@ -241,7 +241,7 @@ class unit:
         for t in self.place.sosed:
             if t == target:
                 re = 1
-            if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'whater'):
+            if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'):
                 re = 0
         if self.place == target:
             re = 1
@@ -550,11 +550,16 @@ def finish_button_click():
         game_proc='phase_doing_attak'
         phase_doing()
     elif game_proc == 'phase_doing_attak':
+        for u1 in all_unites:
+            for u2 in all_unites:
+                if u1.target == u2.place and u1.owner != u2.owner:
+                    #there will be battle
+                    exit()
+
         for u in all_unites:
             u.place = u.target
             u.clicked = 0
-        for u in all_unites:
-            u.show()
+
         for c in all_commands:
             if c.clicked == 1:
                 c.clicked = 0
