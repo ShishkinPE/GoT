@@ -329,12 +329,21 @@ def show_map(canv):
     image_house.place(x=-10000, y=0)
 
 def show_track():
-    global image_track
+    global image_track, all_houses, track_images
     image_track.place(x=0, y=0)
+    for i in range(6):
+        print(i)
+        track_images[3*i].place(x=157 + (all_houses[i].tron - 1) * 93, y=45)
+        track_images[3*i+1].place(x=157 + (all_houses[i].sword - 1) * 93, y=136)
+        track_images[3*i+2].place(x=157 + (all_houses[i].voron - 1) * 93, y=226)
 
 def close_track():
-    global image_track
+    global image_track, track_images
     image_track.place(x=700, y=-900)
+    for i in range(6):
+        track_images[3*i-2].place(x=157 + (all_houses[i].tron - 1) * 93, y=-45)
+        track_images[3*i-1].place(x=157 + (all_houses[i].sword - 1) * 93, y=-134)
+        track_images[3*i].place(x=157 + (all_houses[i].voron - 1) * 93, y=-225)
 
 def create_unites(all_unites):
     """create start unites u == unit s == stark r == greydjoy"""
@@ -352,11 +361,24 @@ def create_unites(all_unites):
         u.show()
 
 def create_track():
-    global images, image_track
-    path = "media/track.gif"
-    img = PhotoImage(file=path)
+    global images, image_track, all_houses, track_images, all_houses
+    # 0 0 = 157, 45
+    # dh = 90 dx = 95
+    path = "media/track-test.gif"
+    img = PhotoImage(file = path)
     images.append(img)
-    image_track = Label(root, image=img)
+    image_track = Label(root, image = img)
+    for h in all_houses:
+        path = "media/houses/" + h.name + ".gif"
+        image = PhotoImage(file = path)
+        l1 = Label(root, image = image, width = 38, height = 38)
+        l2 = Label(root, image = image, width = 38, height = 38)
+        l3 = Label(root, image = image, width = 38, height = 38)
+        track_images.append(l1)
+        track_images.append(l2)
+        track_images.append(l3)
+        images.append(image)
+
 
 def create_command():
     global all_houses
@@ -554,7 +576,7 @@ barateon = house('barateon', 2, 1, 'comp', [], [], 1, 5, 4)
 martell = house('martell', 2, 1, 'comp', [], [], 5, 4, 3)
 tirrel = house('tirrel', 2, 1, 'comp', [], [], 6, 2, 5)
 lannister = house('lannister', 2, 1, 'comp', [], [], 2, 6, 1)
-greydjoy = house('gredjoy', 2, 1, 'comp', [], [], 4, 1, 6)
+greydjoy = house('greydjoy', 2, 1, 'comp', [], [], 4, 1, 6)
 stark = house('stark', 1, 2, 'comp', [], [], 3, 3, 2)
 
 butX1=0.4
@@ -575,9 +597,10 @@ game_proc='menu'
 player_status='niht'
 
 h = 0
-all_unites=[]
-all_commands=[]
-all_houses=[stark, greydjoy, lannister, martell, tirrel, barateon]
+track_images = []
+all_unites = []
+all_commands = []
+all_houses = [stark, greydjoy, lannister, martell, tirrel, barateon]
 map_y=0
 
 create_command()
