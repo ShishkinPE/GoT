@@ -53,6 +53,9 @@ class command:
                     self.place = t
                 self.show()
 
+    def show_battle(self, type):
+        self.id2.place(x=SX()//13*type+SX()//20, y=SY()//20*7)
+
 class attak(command):
 
     def __init__(self, power, owner, x0, y0):
@@ -78,6 +81,7 @@ class attak(command):
             path1 = "media/commands/attak(+1).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
         self.show()
 
     def doing(self, event):
@@ -103,7 +107,7 @@ class attak(command):
                     if u.clicked == 1 and u.can_attak(t):
                         u.target = t
                         u.clicked = 0
-                        u.show()
+                    u.show()
 
 class boost(command):
     def doing(self, event):
@@ -128,6 +132,7 @@ class boost(command):
             path1 = "media/commands/boost(+1).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
         self.show()
 
 class defense(command):
@@ -154,6 +159,7 @@ class defense(command):
             path1 = "media/commands/defense(+2).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
         self.show()
 
 class fire(command):
@@ -177,6 +183,7 @@ class fire(command):
             path1 = "media/commands/fire(+1).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
         self.show()
 
     def doing(self, event):
@@ -216,6 +223,7 @@ class money_command(command):
             path1 = "media/commands/money_command(+1).gif"
         self.img = PhotoImage(file = path1)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
         self.show()
 
 class unit:
@@ -234,11 +242,20 @@ class unit:
         self.img = PhotoImage(file = path1)
         images.append(self.img)
         self.id = Label(image_map, image = self.img)
+        self.id2 = Label(battle_window, image=self.img)
 
     def can_attak(self,target):
-        global all_territories
+        global all_territories, all_unites
         re = 0
-        for t in self.place.sosed:
+        q=1
+        local_sosed = self.place.sosed
+        for i in range(7):
+            for t in local_sosed:
+                for u in all_unites:
+                    if u.unit_type == 'ship' and u.place == t:
+                        for t1 in t.sosed:
+                            local_sosed.append(t1)
+        for t in local_sosed:
             if t == target:
                 re = 1
             if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'):
@@ -251,10 +268,13 @@ class unit:
         global h, image_map, images, all_unites
         i=0
         for u in all_unites:
-            if self.place == u.place:
+            if self.target == u.target:
                 u.place_number = i
                 i += 1
         self.id.place(x=(self.target.army_x - 45 * i // 2) + 45 * self.place_number, y=self.target.army_y - self.clicked * 5)
+
+    def show_battle(self, number, type):
+        self.id2.place(x = SX()//20 + type*SX()//10, y = SY()//2 + number*SY()//10)
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -493,15 +513,24 @@ def phase_plans():
     game_proc='phase_plans'
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
     Finish_button.config(text='Приказы отданы.')
+    title_label.place(x=SX()*0.4, y= SY()*0.05)
+    title_label.config(text='Фаза замыслов', font="Arial 30")
+    root.after(2000, delete_title)
 
 def phase_doing():
     global game_proc
     if game_proc == 'phase_plans':
+        title_label.place(x=SX()*0.34, y=SY()*0.05)
+        title_label.config(text='Фаза действий: набеги')
+        root.after(3000, delete_title)
         game_proc='phase_doing_fire'
         print(game_proc)
         Finish_button.config(text='Набеги завершены')
     if game_proc == 'phase_doing_attak':
         Finish_button.config(text='В поход!')
+        title_label.place(x=SX() * 0.34, y=SY() * 0.05)
+        title_label.config(text='Фаза действий: походы')
+        root.after(3000, delete_title)
 
 def motion(event):
     global h, game_proc, all_commands
@@ -550,21 +579,26 @@ def finish_button_click():
         game_proc='phase_doing_attak'
         phase_doing()
     elif game_proc == 'phase_doing_attak':
+        z=0
         for u1 in all_unites:
             for u2 in all_unites:
                 if u1.target == u2.place and u1.owner != u2.owner:
-                    #there will be battle
-                    exit()
+                    if z==0 or z==u1.target:
+                        z=u1.target
+                    else:
+                        z=1
+        if z != 0 and z != 1:
+            battle(z)
+        if z != 1:
+            for u in all_unites:
+                u.place = u.target
+                u.clicked = 0
 
-        for u in all_unites:
-            u.place = u.target
-            u.clicked = 0
-
-        for c in all_commands:
-            if c.clicked == 1:
-                c.clicked = 0
-                c.place = 'niht'
-                c.show()
+            for c in all_commands:
+                if c.clicked == 1:
+                    c.clicked = 0
+                    c.place = 'niht'
+                    c.show()
 
 def comp_plans():
     global all_commands
@@ -574,6 +608,36 @@ def comp_plans():
             c.place = rov_keylin
             c.show()
             print('0')
+
+def delete_title():
+    title_label.place(x=-1000, y=0)
+
+def battle(place):
+    battle_window.place(x=SX()//10, y=SY()//10)
+    pathA = "media/food/ruse_bolton.gif"
+    pathD = "media/food/ruse_bolton.gif"
+    imgA=PhotoImage(file=pathA)
+    imgD=PhotoImage(file=pathD)
+    images.append(imgA)
+    images.append(imgD)
+    LeaderA.config(image=imgA)
+    LeaderD.config(image=imgD)
+    LeaderA.place(x=SX()*0.1, y=SY()*0.1)
+    LeaderD.place(x=SX()*0.9-161, y=SY()*0.1)
+    number_A=0
+    number_D=0
+    for u in all_unites:
+        if u.place == place:
+            u.show_battle(number_D, 7)
+            number_D=number_D+1
+        if u.target == place and u.place != place:
+            u.show_battle(number_A, 0)
+            number_A = number_A + 1
+    for c in all_commands:
+        if c.place == place:
+            c.show_battle(9)
+        if c.clicked == 1:
+            c.show_battle(0)
 
 
 root=Tk()
@@ -610,14 +674,18 @@ track_images = []
 all_unites = []
 all_commands = []
 all_houses = [stark, greydjoy, lannister, martell, tirrel, barateon]
-map_y=0
-
-create_command()
-
 menu_draw(canv)
 root.bind('<Button-1>', main_click)
 image_map.bind('<Button-4>', map_down)
 image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
 Finish_button=Button(root, text = 'Дима мокеев петух', command = finish_button_click)
+title_label=Label(root, text='дима мокеев петух')
+path = "media/test.gif"
+img2 = PhotoImage(file=path)
+battle_window=Label(root, width=SX()*8//10, heigh=SY()*8//10, image=img)
+LeaderD=Label(root)
+LeaderA=Label(root)
+create_command()
+
 root.mainloop()
