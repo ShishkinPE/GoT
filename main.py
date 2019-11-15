@@ -54,7 +54,7 @@ class command:
                 self.show()
 
     def show_battle(self, type):
-        self.id2.place(x=SX()//13*type+SX()//20, y=SY()//20*7)
+        self.id2.place(x = 20 + type * 96, y = 260)
 
 class attak(command):
 
@@ -235,10 +235,7 @@ class unit:
         self.owner = owner
         self.place_number = place_number
         self.clicked = 0
-        if self.owner == stark:
-            path1 = "media/test.gif"
-        if self.owner == greydjoy:
-            path1 = "media/test-1.gif"
+        path1 = "media/unitы/" + self.owner.name + "-" + self.unit_type + ".gif"
         self.img = PhotoImage(file = path1)
         images.append(self.img)
         self.id = Label(image_map, image = self.img)
@@ -274,7 +271,7 @@ class unit:
         self.id.place(x=(self.target.army_x - 45 * i // 2) + 45 * self.place_number, y=self.target.army_y - self.clicked * 5)
 
     def show_battle(self, number, type):
-        self.id2.place(x = SX()//20 + type*SX()//10, y = SY()//2 + number*SY()//10)
+        self.id2.place(x = 20 + type * 96, y = 310 + number * 65)
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -290,6 +287,18 @@ class house:
 
     def __eq__(self, other):
         return self is other
+
+class leaders:
+    def __init__(self, owner, name):
+        self.owner = owner
+        self.name = name
+        self.clicked = 0
+        if self.owner.name == self.name:
+            self.clicked = 1
+        self.id = Label(root)
+        path = 'media/food/' + self.owner.name + '/' + self.name + '.gif'
+        self.img=PhotoImage(file = path)
+        self.id.config(image = self.img)
 
 def menu_draw(canv):
     global images, image_menu
@@ -357,7 +366,6 @@ def show_track():
     global image_track, all_houses, track_images
     image_track.place(x=0, y=0)
     for i in range(6):
-        print(i)
         track_images[3*i].place(x=157 + (all_houses[i].tron - 1) * 93, y=45)
         track_images[3*i+1].place(x=157 + (all_houses[i].sword - 1) * 93, y=136)
         track_images[3*i+2].place(x=157 + (all_houses[i].voron - 1) * 93, y=226)
@@ -373,15 +381,20 @@ def close_track():
 def create_unites(all_unites):
     """create start unites u == unit s == stark r == greydjoy"""
     us1 = unit('knight', winterfall, stark, 1)
+    ustest2 = unit('knight', winterfall, stark, 3)
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
-    ug1 = unit('test', rov_keylin, greydjoy,1)
+    ustest = unit('ship', uzkoe_more, stark, 1)
+    ug1 = unit('test', rov_keylin, greydjoy, 1)
     all_unites.append(us1)
+    all_unites.append(ustest)
+    all_unites.append(ustest2)
     all_unites.append(us2)
     all_unites.append(us3)
     all_unites.append(us4)
     all_unites.append(ug1)
+
     for u in all_unites:
         u.show()
 
@@ -524,7 +537,6 @@ def phase_doing():
         title_label.config(text='Фаза действий: набеги')
         root.after(3000, delete_title)
         game_proc='phase_doing_fire'
-        print(game_proc)
         Finish_button.config(text='Набеги завершены')
     if game_proc == 'phase_doing_attak':
         Finish_button.config(text='В поход!')
@@ -549,8 +561,7 @@ def motion(event):
                 c.close()
 
 def main_click(event):
-    global game_proc, h, all_commands, all_unites
-    print(game_proc)
+    global game_proc, h, all_commands, all_unites, battle_place
     if game_proc =='menu':
         menu_1(event.x, event.y)
     elif game_proc =='choise':
@@ -569,6 +580,42 @@ def main_click(event):
         for c in all_commands:
             if c.type == 'attak':
                 c.doing(event)
+    elif game_proc == 'battle':
+        for u in all_unites:
+            if u.owner == player_status and u.target == battle_place and u.place != battle_place:
+                player_role = 'attak'
+            if u.owner == player_status and u.place == battle_place:
+                player_role = 'defense'
+        if event.widget == LeaderA and player_role == 'attak':
+            z = 0
+            for l in all_leaders:
+                if z == 1 and l.owner == player_status:
+                    l.clicked = 1
+                    LeaderA.config(image = l.img)
+                    z = -1
+                if l.owner == player_status and l.clicked == 1 and z == 0:
+                    z = 1
+                    l.clicked = 0
+            for l in all_leaders:
+                if z == 1 and l.owner == player_status:
+                    l.clicked = 1
+                    LeaderA.config(image = l.img)
+                    z = -1
+        if event.widget == LeaderD and player_role == 'defense':
+            z = 0
+            for l in all_leaders:
+                if z == 1 and l.owner == player_status:
+                    l.clicked = 1
+                    LeaderD.config(image=l.img)
+                    z = -1
+                if l.owner == player_status and l.clicked == 1 and z == 0:
+                    z = 1
+                    l.clicked = 0
+            for l in all_leaders:
+                if z == 1 and l.owner == player_status:
+                    l.clicked = 1
+                    LeaderD.config(image=l.img)
+                    z = -1
 
 def finish_button_click():
     global game_proc, all_unites
@@ -588,8 +635,11 @@ def finish_button_click():
                     else:
                         z=1
         if z != 0 and z != 1:
-            battle(z)
-        if z != 1:
+            game_proc='battle'
+            global battle_place
+            battle_place = z
+            battle_graphic()
+        if z == 0:
             for u in all_unites:
                 u.place = u.target
                 u.clicked = 0
@@ -599,6 +649,9 @@ def finish_button_click():
                     c.clicked = 0
                     c.place = 'niht'
                     c.show()
+    elif game_proc == 'battle':
+        end_battle()
+        game_proc == 'phase_doing_attak'
 
 def comp_plans():
     global all_commands
@@ -612,33 +665,77 @@ def comp_plans():
 def delete_title():
     title_label.place(x=-1000, y=0)
 
-def battle(place):
+def battle_graphic():
+    global battle_place, all_leaders
+    Finish_button.config(text = 'Битва!')
     battle_window.place(x=SX()//10, y=SY()//10)
-    pathA = "media/food/ruse_bolton.gif"
-    pathD = "media/food/ruse_bolton.gif"
-    imgA=PhotoImage(file=pathA)
-    imgD=PhotoImage(file=pathD)
-    images.append(imgA)
-    images.append(imgD)
-    LeaderA.config(image=imgA)
-    LeaderD.config(image=imgD)
-    LeaderA.place(x=SX()*0.1, y=SY()*0.1)
-    LeaderD.place(x=SX()*0.9-161, y=SY()*0.1)
+    for u in all_unites:
+        if u.target == battle_place and u.place != battle_place:
+            attak_player = u.owner
+        if u.place == battle_place:
+            defense_player = u.owner
+    for l in all_leaders:
+        if l.owner == player_status and l.clicked == 1:
+            LeaderA.config(image = l.img)
+    LeaderA.place(x = SX()*0.1, y = SY()*0.1)
+    LeaderD.place(x = SX()*0.9-161, y = SY()*0.1)
     number_A=0
     number_D=0
     for u in all_unites:
-        if u.place == place:
-            u.show_battle(number_D, 7)
-            number_D=number_D+1
-        if u.target == place and u.place != place:
+        if u.place == battle_place:
+            u.show_battle(number_D, 10)
+            number_D = number_D+1
+        if u.target == battle_place and u.place != battle_place:
             u.show_battle(number_A, 0)
             number_A = number_A + 1
     for c in all_commands:
-        if c.place == place:
-            c.show_battle(9)
+        if c.place == battle_place:
+            c.show_battle(10)
         if c.clicked == 1:
             c.show_battle(0)
+    def_help = 9
+    att_help = 1
+    for t in  battle_place.sosed:
+        for c in all_commands:
+            if c.place == t and c.type == 'boost' and defense_player == c.owner:
+                c.show_battle(def_help)
+                number_D = 0
+                for u in all_unites:
+                    if u.place == c.place:
+                        u.show_battle(number_D, def_help)
+                        number_D += 1
+                def_help -= 1
+            if c.place == t and c.type == 'boost' and attak_player == c.owner:
+                c.show_battle(att_help)
+                number_A = 0
+                for u in all_unites:
+                    if u.place == c.place:
+                        u.show_battle(number_A, att_help)
+                        number_A += 1
+                def_help -= 1
+                att_help += 1
 
+def end_battle():
+    exit()
+
+
+def create_leaders():
+    leader=leaders(stark, 'Ruse')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Katya')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Robb')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Bran')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Eddard')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'John')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Ser')
+    all_leaders.append(leader)
+    leader = leaders(stark, 'stark')
+    all_leaders.append(leader)
 
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
@@ -673,19 +770,24 @@ h = 0
 track_images = []
 all_unites = []
 all_commands = []
+all_leaders=[]
 all_houses = [stark, greydjoy, lannister, martell, tirrel, barateon]
 menu_draw(canv)
+
 root.bind('<Button-1>', main_click)
 image_map.bind('<Button-4>', map_down)
 image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
-Finish_button=Button(root, text = 'Дима мокеев петух', command = finish_button_click)
+
+Finish_button=Button(root, text = 'дима мокеев петух', command = finish_button_click)
 title_label=Label(root, text='дима мокеев петух')
 path = "media/test.gif"
 img2 = PhotoImage(file=path)
-battle_window=Label(root, width=SX()*8//10, heigh=SY()*8//10, image=img)
+battle_img = PhotoImage(file = "media/battle.gif")
+battle_window = Label(root, width = SX() * 8 // 10, heigh = SY() * 8 // 10, image = battle_img)
 LeaderD=Label(root)
 LeaderA=Label(root)
 create_command()
+create_leaders()
 
 root.mainloop()

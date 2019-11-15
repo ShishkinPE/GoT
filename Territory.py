@@ -86,9 +86,8 @@ cherniy_zamok.sosed=[karhold, winterfall,drozhashee_more, ledoviy_zaliv]
 winterfall.sosed=[karhold, belaya_gavan ,drozhashee_more, ledoviy_zaliv, winterfall_port, kamenniy_bereg, rov_keylin, cherniy_zamok]
 karhold.sosed=[winterfall,cherniy_zamok, drozhashee_more]
 kamenniy_bereg.sosed=[winterfall, ledoviy_zaliv]
-belaya_gavan.sosed=[winterfall,white_port,vdoviy_dozor,drozhashee_more, rov_keylin]
+belaya_gavan.sosed=[winterfall,white_port,vdoviy_dozor,drozhashee_more, rov_keylin]  
 drozhashee_more.sosed = [winterfall, cherniy_zamok, uzkoe_more, karhold, vdoviy_dozor, belaya_gavan]
-
+rov_keylin.sosed = [winterfall, belaya_gavan, uzkoe_more] #FIXME
 all_territories=[winterfall, rov_keylin, cherniy_zamok,belaya_gavan, drozhashee_more, winterfall_port,
                  uzkoe_more, white_port, karhold, vdoviy_dozor, ledoviy_zaliv, kamenniy_bereg ]
-winterfall.sosed.append(winterfall_port)
