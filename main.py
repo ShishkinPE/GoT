@@ -674,9 +674,14 @@ def battle_graphic():
             attak_player = u.owner
         if u.place == battle_place:
             defense_player = u.owner
-    for l in all_leaders:
-        if l.owner == player_status and l.clicked == 1:
-            LeaderA.config(image = l.img)
+    path_a = 'media/food/' + attak_player.name + '/' + attak_player.name + '.gif'
+    path_d = 'media/food/' + defense_player.name + '/' + defense_player.name + '.gif'
+    img_a = PhotoImage(file = path_a)
+    img_d = PhotoImage(file = path_d)
+    images.append(img_a)
+    images.append(img_d)
+    LeaderA.config(image = img_a)
+    LeaderD.config(image = img_d)
     LeaderA.place(x = SX()*0.1, y = SY()*0.1)
     LeaderD.place(x = SX()*0.9-161, y = SY()*0.1)
     number_A=0
@@ -717,7 +722,6 @@ def battle_graphic():
 
 def end_battle():
     exit()
-
 
 def create_leaders():
     leader=leaders(stark, 'Ruse')
