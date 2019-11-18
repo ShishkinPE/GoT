@@ -542,17 +542,28 @@ def phase_plans():
     root.after(2000, delete_title)
 
 def phase_doing():
-    global game_proc
+    global game_proc, all_commands, player_status
     if game_proc == 'phase_plans':
         title_label.place(x=SX()*0.34, y=SY()*0.05)
         title_label.config(text='Фаза действий: набеги')
         root.after(3000, delete_title)
         game_proc='phase_doing_fire'
         Finish_button.config(text='Набеги завершены')
-    if game_proc == 'phase_doing_attak':
+    elif game_proc == 'phase_doing_attak':
         Finish_button.config(text='В поход!')
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: походы')
+        root.after(3000, delete_title)
+        z = 0
+        for c in all_commands:
+            if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
+                z = 1
+        if z == 0:
+            game_proc = 'phase_doing_money'
+            phase_doing()
+    elif game_proc == 'phase_doing_money':
+        title_label.place(x=SX() * 0.34, y=SY() * 0.05)
+        title_label.config(text='Фаза действий: сбор власти')
         root.after(3000, delete_title)
 
 def motion(event):
@@ -660,6 +671,13 @@ def finish_button_click():
                     c.clicked = 0
                     c.place = 'niht'
                     c.show()
+        z = 0
+        for c in all_commands:
+            if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
+                z = 1
+        if z == 0:
+            game_proc = 'phase_doing_money'
+            phase_doing()
     elif game_proc == 'battle':
         end_battle()
         game_proc = 'phase_doing_attak'
@@ -734,7 +752,7 @@ def battle_graphic():
 def end_battle():
     power_attak = 0
     power_defense = 0
-    global battle_place, all_leaders, all_unites
+    global battle_place, all_leaders, all_unites, all_commands, player_status, game_proc
     for u in all_unites:
         if u.target == battle_place and u.place != battle_place and u.unit_type != 'trembling':
             power_attak = power_attak + u.power
@@ -762,9 +780,17 @@ def end_battle():
             c.clicked = 0
             c.place = 'niht'
             c.show()
+    z = 0
+    for c in all_commands:
+        if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
+            z = 1
+    if z == 0:
+        game_proc = 'phase_doing_money'
+        phase_doing()
     # FIXME
     for u in all_unites:
         u.target = u.place
+    for u in all_unites:
         u.show()
 
 def create_leaders():
