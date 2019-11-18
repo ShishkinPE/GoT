@@ -230,6 +230,14 @@ class unit:
     def __init__(self, unit_type, place, owner, place_number):
         global h, image_map, images, all_unites
         self.unit_type=unit_type
+        if self.unit_type == 'ship' or self.unit_type == 'footman':
+            self.power = 1
+        elif self.unit_type == 'knight':
+            self.power = 2
+        elif self.unit_type == 'trembling':
+            self.power = 4
+        elif self.unit_type == 'test':
+            self.power = 0
         self.place = place
         self.target = place
         self.owner = owner
@@ -255,7 +263,8 @@ class unit:
         for t in local_sosed:
             if t == target:
                 re = 1
-            if (self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'):
+            if ((self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'))\
+                    or (self.unit_type == 'ship' and  (target.type_cell == 'earth')): #FIXME
                 re = 0
         if self.place == target:
             re = 1
@@ -667,7 +676,7 @@ def delete_title():
     title_label.place(x=-1000, y=0)
 
 def battle_graphic():
-    global battle_place, all_leaders
+    global battle_place, all_leaders, all_unites
     Finish_button.config(text = 'Битва!')
     battle_window.place(x=SX()//10, y=SY()//10)
     for u in all_unites:
@@ -722,6 +731,27 @@ def battle_graphic():
                 att_help += 1
 
 def end_battle():
+    power_attak = 0
+    power_defense = 0
+    global battle_place, all_leaders, all_unites
+    for u in all_unites:
+        if u.target == battle_place and u.place != battle_place and u.unit_type != 'trembling':
+            power_attak = power_attak + u.power
+        if u.target == battle_place and u.place != battle_place and u.unit_type == 'trembling' and battle_place.castles > 0:
+            power_attak = power_attak + u.power
+        if u.place == battle_place and u.unit_type != 'trembling':
+            power_defense = power_defense + u.power
+        if u.target == battle_place and u.place != battle_place:
+            attak_player = u.owner
+        if u.place == battle_place:
+            defense_player = u.owner
+    for l in all_leaders:
+        if l.clicked == 1 and l.owner == attak_player:
+            power_attak = power_attak + l.power
+        if l.clicked == 1 and l.owner == defense_player:
+            power_defense = power_defense + l.power
+    print('защита: ', power_defense)
+    print('атака', power_attak)
     exit()
 
 def create_leaders():
