@@ -682,6 +682,7 @@ def finish_button_click():
         end_battle()
         game_proc = 'phase_doing_attak'
 
+
 def comp_plans():
     global all_commands
     for c in all_commands:
