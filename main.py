@@ -289,9 +289,10 @@ class house:
         return self is other
 
 class leaders:
-    def __init__(self, owner, name):
+    def __init__(self, owner, name, power):
         self.owner = owner
         self.name = name
+        self.power = power
         self.clicked = 0
         if self.owner.name == self.name:
             self.clicked = 1
@@ -724,21 +725,21 @@ def end_battle():
     exit()
 
 def create_leaders():
-    leader=leaders(stark, 'Ruse')
+    leader=leaders(stark, 'Ruse', 2)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Katya')
+    leader = leaders(stark, 'Katya', 0)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Robb')
+    leader = leaders(stark, 'Robb', 3)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Bran')
+    leader = leaders(stark, 'Bran', 1)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Eddard')
+    leader = leaders(stark, 'Eddard', 4)
     all_leaders.append(leader)
-    leader = leaders(stark, 'John')
+    leader = leaders(stark, 'John', 2)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Ser')
+    leader = leaders(stark, 'Ser', 1)
     all_leaders.append(leader)
-    leader = leaders(stark, 'stark')
+    leader = leaders(stark, 'stark', 0)
     all_leaders.append(leader)
 
 root=Tk()
