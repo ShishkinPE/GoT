@@ -743,6 +743,7 @@ def create_leaders():
     all_leaders.append(leader)
 
 
+
 root=Tk()
 root.geometry(str(SX())+'x'+str(SY()))
 canv = Canvas(root,bg='white')
