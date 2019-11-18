@@ -260,11 +260,12 @@ class unit:
                     if u.unit_type == 'ship' and u.place == t:
                         for t1 in t.sosed:
                             local_sosed.append(t1)
+
         for t in local_sosed:
             if t == target:
                 re = 1
             if ((self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'))\
-                    or (self.unit_type == 'ship' and  (target.type_cell == 'earth')): #FIXME
+                    or (self.unit_type == 'ship' and  (target.type_cell == 'earth')):
                 re = 0
         if self.place == target:
             re = 1
@@ -661,7 +662,7 @@ def finish_button_click():
                     c.show()
     elif game_proc == 'battle':
         end_battle()
-        game_proc == 'phase_doing_attak'
+        game_proc = 'phase_doing_attak'
 
 def comp_plans():
     global all_commands
@@ -752,7 +753,19 @@ def end_battle():
             power_defense = power_defense + l.power
     print('защита: ', power_defense)
     print('атака', power_attak)
-    exit()
+    battle_window.place(x = -2000, y = 0)
+    LeaderD.place(x = -1000, y = 0)
+    LeaderA.place(x = -1000, y = 0)
+    Finish_button.config(text = 'В поход!')
+    for c in all_commands:
+        if c.clicked == 1:
+            c.clicked = 0
+            c.place = 'niht'
+            c.show()
+    # FIXME
+    for u in all_unites:
+        u.target = u.place
+        u.show()
 
 def create_leaders():
     leader=leaders(stark, 'Ruse', 2)
