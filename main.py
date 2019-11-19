@@ -252,14 +252,18 @@ class unit:
     def can_attak(self,target):
         global all_territories, all_unites
         re = 0
-        q=1
         local_sosed = self.place.sosed
         for i in range(7):
             for t in local_sosed:
                 for u in all_unites:
                     if u.unit_type == 'ship' and u.place == t:
                         for t1 in t.sosed:
-                            local_sosed.append(t1)
+                            q = 1
+                            for t2 in local_sosed:
+                                if t2 == t1:
+                                    q = 0
+                            if q:
+                                local_sosed.append(t1)
 
         for t in local_sosed:
             if t == target:
@@ -397,7 +401,11 @@ def create_unites(all_unites):
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
     ustest = unit('ship', uzkoe_more, stark, 1)
-    ug1 = unit('test', rov_keylin, greydjoy, 1)
+    ug1 = unit('knight', payk, greydjoy, 1)
+    ug2 = unit('footman', payk, greydjoy, 2)
+    ug3 = unit('footman', serovodye, greydjoy, 1)
+    ug4 = unit('ship', zaliv_zheleznyh_ludey, greydjoy, 1)
+    ug5 = unit('ship', payk_port, greydjoy, 1)
     all_unites.append(us1)
     all_unites.append(ustest)
     all_unites.append(ustest2)
@@ -405,6 +413,10 @@ def create_unites(all_unites):
     all_unites.append(us3)
     all_unites.append(us4)
     all_unites.append(ug1)
+    all_unites.append(ug2)
+    all_unites.append(ug3)
+    all_unites.append(ug4)
+    all_unites.append(ug5)
 
     for u in all_unites:
         u.show()
@@ -681,7 +693,6 @@ def finish_button_click():
     elif game_proc == 'battle':
         end_battle()
         game_proc = 'phase_doing_attak'
-
 
 def comp_plans():
     global all_commands
