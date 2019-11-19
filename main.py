@@ -268,9 +268,9 @@ class unit:
         for t in local_sosed:
             if t == target:
                 re = 1
-            if ((self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'))\
-                    or (self.unit_type == 'ship' and  (target.type_cell == 'earth')):
-                re = 0
+        if ((self.unit_type == 'knight' or self.unit_type == 'footman' or self.unit_type == 'trembling') and (target.type_cell == 'port' or target.type_cell == 'water'))\
+                or (self.unit_type == 'ship' and  (target.type_cell == 'earth')):
+            re = 0
         if self.place == target:
             re = 1
         return re
