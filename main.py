@@ -41,7 +41,8 @@ class command:
         if player_status == lannister:
             exit()
         for t in all_territories:
-            if (pst > stars or self.st == 0) and t.owner(player_status, all_unites) and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
+            t.update_owner(all_houses, all_unites)
+            if (pst > stars or self.st == 0) and t.owner == player_status and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
                 for c in all_commands:
                     if c.place == t:
                         tt = self.place
@@ -187,7 +188,7 @@ class fire(command):
         self.show()
 
     def doing(self, event):
-        global all_commands, all_territories, all_unites, player_status
+        global all_commands, all_territories, all_unites, player_status, all_houses
         if event.widget == self.id and self.owner == player_status:
             for c in all_commands:
                 c.clicked = 0
@@ -199,6 +200,9 @@ class fire(command):
                     c.place = 'niht'
                     c.show()
                     self.show()
+                    for h in all_houses:
+                        if h.tron % 6 - 1 == player_status.tron % 6:
+                            comp_doing_fire(h)
 
 class money_command(command):
     def doing(self, event):
@@ -393,7 +397,8 @@ def close_track():
         track_images[3*i-1].place(x=157 + (all_houses[i].sword - 1) * 93, y=-134)
         track_images[3*i].place(x=157 + (all_houses[i].voron - 1) * 93, y=-225)
 
-def create_unites(all_unites):
+def create_unites():
+    global all_unites
     """create start unites u == unit s == stark r == greydjoy"""
     us1 = unit('knight', winterfall, stark, 1)
     ustest2 = unit('knight', winterfall, stark, 3)
@@ -406,17 +411,7 @@ def create_unites(all_unites):
     ug3 = unit('footman', serovodye, greydjoy, 1)
     ug4 = unit('ship', zaliv_zheleznyh_ludey, greydjoy, 1)
     ug5 = unit('ship', payk_port, greydjoy, 1)
-    all_unites.append(us1)
-    all_unites.append(ustest)
-    all_unites.append(ustest2)
-    all_unites.append(us2)
-    all_unites.append(us3)
-    all_unites.append(us4)
-    all_unites.append(ug1)
-    all_unites.append(ug2)
-    all_unites.append(ug3)
-    all_unites.append(ug4)
-    all_unites.append(ug5)
+    all_unites = [us1, ustest2, us3, us4, ustest, ug1, ug2, ug3, ug4, ug5]
 
     for u in all_unites:
         u.show()
@@ -492,7 +487,7 @@ def choise_house_click(x, y):
 
 def start_game():
     global game_proc, player_status, all_unites, images
-    create_unites(all_unites)
+    create_unites()
     if game_proc=='barateon':
         barateon.status='player'
         show_map(canv)
@@ -554,12 +549,15 @@ def phase_plans():
     root.after(2000, delete_title)
 
 def phase_doing():
-    global game_proc, all_commands, player_status
+    global game_proc, all_commands, player_status, all_houses
     if game_proc == 'phase_plans':
         title_label.place(x=SX()*0.34, y=SY()*0.05)
         title_label.config(text='Фаза действий: набеги')
         root.after(3000, delete_title)
         game_proc='phase_doing_fire'
+        for h in all_houses:
+            if h.tron == 1 and h != player_status:
+                comp_doing_fire(h)
         Finish_button.config(text='Набеги завершены')
     elif game_proc == 'phase_doing_attak':
         Finish_button.config(text='В поход!')
@@ -577,6 +575,11 @@ def phase_doing():
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: сбор власти')
         root.after(3000, delete_title)
+        Finish_button.config(text='Завершить сбор власти')
+
+def phase_vesteros():
+    #FIXME here add phases of vesteros
+    phase_plans()
 
 def motion(event):
     global h, game_proc, all_commands
@@ -606,7 +609,6 @@ def main_click(event):
         for c in all_commands:
             c.give_command(event)
     elif game_proc == 'phase_doing_fire':
-        print('in')
         for c in all_commands:
             if c.type == 'fire':
                 c.doing(event)
@@ -652,7 +654,7 @@ def main_click(event):
                     z = -1
 
 def finish_button_click():
-    global game_proc, all_unites
+    global game_proc, all_unites, all_houses, all_commands
     if game_proc == 'phase_plans':
         phase_doing()
         comp_plans()
@@ -683,6 +685,9 @@ def finish_button_click():
                     c.clicked = 0
                     c.place = 'niht'
                     c.show()
+            for h in all_houses:
+                if h.tron == 1 and h != player_status:
+                    comp_doing_attak(h)
         z = 0
         for c in all_commands:
             if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
@@ -693,15 +698,53 @@ def finish_button_click():
     elif game_proc == 'battle':
         end_battle()
         game_proc = 'phase_doing_attak'
+    elif game_proc == 'phase_doing_money':
+        game_proc = 'phase_vesteros'
+        phase_vesteros()
 
 def comp_plans():
-    global all_commands
-    for c in all_commands:
+    global all_commands, all_territories, all_houses, all_unites
+    for h in [greydjoy]:
+        for c in all_commands:
+            if c.owner == h:
+                c.place = 'niht'
+        for t in all_territories:
+            allow_put = 0
+            for u in all_unites:
+                if u.owner == h and u.place == t:
+                    allow_put = 1
+            for c in all_commands:
+                if c.owner == h and allow_put == 1 and c.place == 'niht' and c.type == 'fire':
+                    allow_put = 0
+                    c.place = t
+                    c.show()
 
-        if c.owner == greydjoy and c.type == 'defense' and c.st == 1:
-            c.place = rov_keylin
-            c.show()
-            print('0')
+
+def comp_doing_fire(fire_owner):
+    global all_commands, player_status, all_houses
+    z = 0
+    for c in all_commands:
+        if c.owner == fire_owner and c.type == 'fire' and z == 0 and c.place != 'niht':
+            z = 1
+            z2 = 0
+            for c2 in all_commands:
+                if c2.owner != fire_owner and z2 == 0:
+                    print(c.place)
+                    for s in c.place.sosed:
+                        if c2.place.name == s.name:
+                            c2.place = 'niht'
+                            c.place = 'niht'
+                            c.show()
+                            c2.show()
+                            z2 = 1
+    for h in all_houses:
+        if h.tron % 6 - 1 == fire_owner.tron % 6 and h != player_status:
+            comp_doing_fire(h)
+
+def comp_doing_attak(attak_owner):
+    for h in all_houses:
+        if h != player_status and h.tron % 6 == attak_owner.tron % 6 +1:
+            comp_doing_attak(h)
 
 def delete_title():
     title_label.place(x=-1000, y=0)

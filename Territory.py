@@ -11,16 +11,18 @@ class cell:
         self.r=40 #radius knopki
         self.army_x=army_x
         self.army_y=army_y
+        self.owner = 0
+
 
     def __eq__(self, other):
         return  self is other
 
-    def owner(self, smb, all_unites):
+    def update_owner(self, all_houses, all_unites):
         r = 0
-        for u in all_unites:
-            if u.place == self and u.owner == smb:
-                r = True
-        return r
+        for h in all_houses:
+            for u in all_unites:
+                if u.place == self and u.owner == h:
+                    self.owner = h
         
 winterfall=cell('winterfall', 1, 1, 2, [], 'earth', 530, 420, 780,300)
 winterfall_port=cell('winterfall_port', 0, 0, 0, [], 'port', 360, 280, 360, 280)
