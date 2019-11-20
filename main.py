@@ -401,17 +401,34 @@ def create_unites():
     global all_unites
     """create start unites u == unit s == stark r == greydjoy"""
     us1 = unit('knight', winterfall, stark, 1)
-    ustest2 = unit('knight', winterfall, stark, 3)
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
-    ustest = unit('ship', uzkoe_more, stark, 1)
     ug1 = unit('knight', payk, greydjoy, 1)
     ug2 = unit('footman', payk, greydjoy, 2)
     ug3 = unit('footman', serovodye, greydjoy, 1)
     ug4 = unit('ship', zaliv_zheleznyh_ludey, greydjoy, 1)
     ug5 = unit('ship', payk_port, greydjoy, 1)
-    all_unites = [us1, ustest2, us3, us4, ustest, ug1, ug2, ug3, ug4, ug5]
+    ub1 = unit('ship', gubitelnie_vali, barateon, 1)
+    ub2 = unit('ship', gubitelnie_vali, barateon, 2)
+    ub3 = unit('footman', king_les, barateon, 1)
+    ub4 = unit('footman', dragonstone, barateon, 1)
+    ub5 = unit('knight', dragonstone, barateon, 1)
+    um1 = unit('footman', sun_kopyo, martell, 1)
+    um2 = unit('knight', sun_kopyo, martell, 1)
+    um3 = unit('footman', soleniy_bereg, martell, 1)
+    um4 = unit('ship', dorn_more, martell, 1)
+    ut1 = unit('footman', higarden, tirrel, 1)
+    ut2 = unit('footman', dorn_marks, tirrel, 1)
+    ut3 = unit('knight', higarden, tirrel, 1)
+    ut4 = unit('ship', proliv_redvin, tirrel, 1)
+    ul1 = unit('footman', kamennaya_septa, lannister,1)
+    ul2 = unit('footman', pidortown, lannister,1)
+    ul3 = unit('ship', gold_proliv, lannister,1)
+    ul4 = unit('knight', pidortown, lannister,1)
+    ul5 = unit('ship', pidor_port, lannister,1)
+
+    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
 
     for u in all_unites:
         u.show()
@@ -719,7 +736,6 @@ def comp_plans():
                     c.place = t
                     c.show()
 
-
 def comp_doing_fire(fire_owner):
     global all_commands, player_status, all_houses
     z = 0
@@ -878,19 +894,19 @@ lannister = house('lannister', 2, 1, 'comp', [], [], 2, 6, 1)
 greydjoy = house('greydjoy', 2, 1, 'comp', [], [], 4, 1, 6)
 stark = house('stark', 1, 2, 'comp', [], [], 3, 3, 2)
 
-butX1=0.4
-butX2=0.6
-butY1=0.3
-butY2=0.35
-butShag=0.15
+butX1 = 0.4
+butX2 = 0.6
+butY1 = 0.3
+butY2 = 0.35
+butShag = 0.15
 global images, images_arm, track_status
 track_status = 0
 images = []
 
 path = "media/map0.gif"
-img = PhotoImage(file=path)
+img = PhotoImage(file = path)
 images.append(img)
-image_map = Label(canv, image=img)
+image_map = Label(canv, image = img)
 
 game_proc='menu'
 player_status='niht'
@@ -899,7 +915,7 @@ h = 0
 track_images = []
 all_unites = []
 all_commands = []
-all_leaders=[]
+all_leaders = []
 all_houses = [stark, greydjoy, lannister, martell, tirrel, barateon]
 menu_draw(canv)
 
