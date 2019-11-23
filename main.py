@@ -38,8 +38,6 @@ class command:
             pst = 2
         if player_status.voron == 4:
             pst == 1
-        if player_status == lannister:
-            exit()
         for t in all_territories:
             t.update_owner(all_houses, all_unites)
             if (pst > stars or self.st == 0) and t.owner == player_status and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
@@ -84,6 +82,7 @@ class attak(command):
         self.id = Label(image_map, image = self.img)
         self.id2 = Label(battle_window, image=self.img)
         self.show()
+        self.comp_target = 'niht'
 
     def doing(self, event):
         global all_commands, all_territories, all_unites, player_status
@@ -277,6 +276,8 @@ class unit:
             re = 0
         if self.place == target:
             re = 1
+        for s in pidor_port.sosed:
+            print(s.place)
         return re
 
     def show(self):
@@ -433,6 +434,9 @@ def create_unites():
     for u in all_unites:
         u.show()
 
+    for t in all_territories:
+        t.update_owner(all_houses, all_unites)
+
 def create_track():
     global images, image_track, all_houses, track_images, all_houses
     # 0 0 = 157, 45
@@ -470,21 +474,39 @@ def create_command():
         money_command_1=money_command(0, h, SX() - 225, 0)
         money_command_2=money_command(0, h, SX() - 225, 45)
         money_command_3=money_command(1, h, SX() - 225, 90)
+        all_commands.append(attak_3)
         all_commands.append(attak_1)
         all_commands.append(attak_2)
-        all_commands.append(attak_3)
+        all_commands.append(boost_3)
         all_commands.append(boost_1)
         all_commands.append(boost_2)
-        all_commands.append(boost_3)
+        all_commands.append(defense_3)
         all_commands.append(defense_1)
         all_commands.append(defense_2)
-        all_commands.append(defense_3)
+        all_commands.append(fire_3)
         all_commands.append(fire_1)
         all_commands.append(fire_2)
-        all_commands.append(fire_3)
+        all_commands.append(money_command_3)
         all_commands.append(money_command_1)
         all_commands.append(money_command_2)
-        all_commands.append(money_command_3)
+
+def create_leaders():
+    leader=leaders(stark, 'Ruse', 2)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Katya', 0)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Robb', 3)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Bran', 1)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Eddard', 4)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'John', 2)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'Ser', 1)
+    all_leaders.append(leader)
+    leader = leaders(stark, 'stark', 0)
+    all_leaders.append(leader)
 
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
@@ -558,6 +580,8 @@ def start_game():
 
 def phase_plans():
     global game_proc, all_commands, player_status
+    for c in all_commands:
+        c.place = 'niht'
     game_proc='phase_plans'
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
     Finish_button.config(text='Приказы отданы.')
@@ -566,6 +590,8 @@ def phase_plans():
     root.after(2000, delete_title)
 
 def phase_doing():
+    for s in pidor_port.sosed:
+        print(s.place)
     global game_proc, all_commands, player_status, all_houses
     if game_proc == 'phase_plans':
         title_label.place(x=SX()*0.34, y=SY()*0.05)
@@ -720,21 +746,51 @@ def finish_button_click():
         phase_vesteros()
 
 def comp_plans():
-    global all_commands, all_territories, all_houses, all_unites
-    for h in [greydjoy]:
-        for c in all_commands:
-            if c.owner == h:
-                c.place = 'niht'
-        for t in all_territories:
-            allow_put = 0
-            for u in all_unites:
-                if u.owner == h and u.place == t:
-                    allow_put = 1
-            for c in all_commands:
-                if c.owner == h and allow_put == 1 and c.place == 'niht' and c.type == 'fire':
-                    allow_put = 0
-                    c.place = t
-                    c.show()
+    global all_commands, all_territories, all_houses, all_unites, player_status
+    pass
+    for h in all_houses:
+        if h != player_status:
+            if h.voron == 1 or h.voron == 2:
+                stars = 3
+            if h.voron == 3:
+                stars = 2
+            if h.voron == 4:
+                stars = 1
+            if h.voron > 4:
+                stars = 0
+            for t in all_territories:
+                allow_put = 0
+                for u in all_unites:
+                    if u.owner == h and u.place == t:
+                        allow_put = 1
+                        local_unit = u
+                for c in all_commands:
+                    for t2 in all_territories:
+                        if c.owner == h and allow_put == 1 and c.place == 'niht' and c.type == 'attak' and local_unit.can_attak(t2) and t2.castles > 0 and t.type_cell == 'earth' and t2.comp_choose == 0 and t2.owner != h:
+                            if stars > 0 and c.st == 1:
+                                allow_put = 0
+                                c.place = t
+                                c.show()
+                                t2.comp_choose = 1
+                                stars = stars - 1
+                                c.comp_target = t2
+                            elif c.st == 0:
+                                allow_put = 0
+                                c.place = t
+                                c.show()
+                                t2.comp_choose = 1
+                                c.comp_target = t2
+                    """for s in t.sosed:
+                        if c.owner == h and c.type == 'fire' and allow_put == 1 and c.place == 'niht' and s.owner != 0 and s.owner != h:
+                            if stars > 0 and c.st == 1:
+                                allow_put = 0
+                                c.place = t
+                                c.show()
+                                stars = stars - 1
+                            elif c.st == 0:
+                                allow_put = 0
+                                c.place = t
+                                c.show()"""
 
 def comp_doing_fire(fire_owner):
     global all_commands, player_status, all_houses
@@ -864,27 +920,9 @@ def end_battle():
     for u in all_unites:
         u.show()
 
-def create_leaders():
-    leader=leaders(stark, 'Ruse', 2)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'Katya', 0)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'Robb', 3)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'Bran', 1)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'Eddard', 4)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'John', 2)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'Ser', 1)
-    all_leaders.append(leader)
-    leader = leaders(stark, 'stark', 0)
-    all_leaders.append(leader)
-
 root=Tk()
-root.geometry(str(SX())+'x'+str(SY()))
-canv = Canvas(root,bg='white')
+root.geometry(str(SX()) + 'x' + str(SY()))
+canv = Canvas(root, bg = 'white')
 canv.pack(fill = BOTH, expand = 1)
 
 barateon = house('barateon', 2, 1, 'comp', [], [], 1, 5, 4)

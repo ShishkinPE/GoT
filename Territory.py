@@ -12,13 +12,13 @@ class cell:
         self.army_x=army_x
         self.army_y=army_y
         self.owner = 0
+        self.comp_choose = 0
 
 
     def __eq__(self, other):
         return  self is other
 
     def update_owner(self, all_houses, all_unites):
-        r = 0
         for h in all_houses:
             for u in all_unites:
                 if u.place == self and u.owner == h:
@@ -62,26 +62,26 @@ dorn_marks=cell('dorn_marks',0,1,0,[],'earth', 546, 1880, 455, 1910)
 kostanoy_put=cell('kostanoy_put',0,1,0,[],'earth', 793, 1904, 695, 1940)
 staromest=cell('staromest',0,0,2,[],'earth', 302, 1967, 239, 2016)
 three_bashni=cell('three_bashni',1,0,0,[],'earth', 392, 2078, 349, 2137)
-prince_pereval=cell('',1,1,0,[],'earth', 559, 1984, 523, 2015)
-ayronvud=cell('',0,0,1,[],'earth', 643, 2122, 659, 2134)
-sun_kopyo=cell('',1,1,2,[],'earth', 1018, 2108, 1019, 2136)
-soleniy_bereg=cell('',1,0,0,[],'earth', 837, 2204, 724, 2191)
-starfall=cell('',1,0,1,[],'earth', 513, 2250, 533, 2176)
-arbor=cell('',0,1,0,[],'earth', 115, 2269, 116, 2295)
-dragonstone=cell('',1,1,2,[],'earth', 1224  , 1338, 1215, 1364)
-dragonstone_port=cell('',0,0,0,[],'port', 1231, 1529, 1232, 1539)
-sun_port=cell('',0,0,0,[],'port', 1184, 2177, 1184, 2187)
-storm_port=cell('', 0, 0, 0, [], 'port', 1039, 1839, 1039, 1849)
-payk_port=cell('', 0, 0, 0, [], 'port', 317, 1040, 316, 1072)
-pidor_port=cell('',0,0,0,[],'port', 254, 1365, 254 , 1366)
-staromest_port=cell('',0,0,0,[],'port', 177, 1963, 177, 1973)
-gold_proliv=cell('',0,0,0,[],'water', 94, 1491, 126, 1402)
-west_summer_more=cell('',0,0,0,[],'water', 393, 2379, 82, 1699)
-proliv_redvin=cell('',0,0,0,[],'water', 146, 2166, 161, 2181)
-east_summer_more=cell('',0,0,0,[],'water', 979, 2381, 975, 2291)
-dorn_more=cell('',0,0,0,[],'water', 902, 2026, 904, 2041)
-gubitelnie_vali=cell('',0,0,0,[],'water', 1217, 1663, 1184, 1678)
-chernovod_zaliv=cell('',0,0,0,[],'water', 1003, 1501, 968, 1527)
+prince_pereval=cell('prince_pereval',1,1,0,[],'earth', 559, 1984, 523, 2015)
+ayronvud=cell('ayronvud',0,0,1,[],'earth', 643, 2122, 659, 2134)
+sun_kopyo=cell('sun_kopyo',1,1,2,[],'earth', 1018, 2108, 1019, 2136)
+soleniy_bereg=cell('soleniy_bereg',1,0,0,[],'earth', 837, 2204, 724, 2191)
+starfall=cell('starfall',1,0,1,[],'earth', 513, 2250, 533, 2176)
+arbor=cell('arbor',0,1,0,[],'earth', 115, 2269, 116, 2295)
+dragonstone=cell('dragonstone',1,1,2,[],'earth', 1224  , 1338, 1215, 1364)
+dragonstone_port=cell('dragonstone_port',0,0,0,[],'port', 1231, 1529, 1232, 1539)
+sun_port=cell('sun_port',0,0,0,[],'port', 1184, 2177, 1184, 2187)
+storm_port=cell('storm_port', 0, 0, 0, [], 'port', 1039, 1839, 1039, 1849)
+payk_port=cell('payk_port', 0, 0, 0, [], 'port', 317, 1040, 316, 1072)
+pidor_port=cell('pidor_port',0,0,0,[],'port', 254, 1365, 254 , 1366)
+staromest_port=cell('staromest_port',0,0,0,[],'port', 177, 1963, 177, 1973)
+gold_proliv=cell('gold_proliv',0,0,0,[],'water', 94, 1491, 126, 1402)
+west_summer_more=cell('west_summer_more',0,0,0,[],'water', 393, 2379, 82, 1699)
+proliv_redvin=cell('proliv_redvin',0,0,0,[],'water', 146, 2166, 161, 2181)
+east_summer_more=cell('east_summer_more',0,0,0,[],'water', 979, 2381, 975, 2291)
+dorn_more=cell('dorn_more',0,0,0,[],'water', 902, 2026, 904, 2041)
+gubitelnie_vali=cell('gubitelnie_vali',0,0,0,[],'water', 1217, 1663, 1184, 1678)
+chernovod_zaliv=cell('chernovod_zaliv',0,0,0,[],'water', 1003, 1501, 968, 1527)
 
 cherniy_zamok.sosed=[karhold, winterfall,drozhashee_more, ledoviy_zaliv]
 winterfall.sosed=[karhold, belaya_gavan ,drozhashee_more, ledoviy_zaliv, winterfall_port, kamenniy_bereg, rov_keylin, cherniy_zamok]
