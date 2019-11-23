@@ -19,6 +19,7 @@ class cell:
         return  self is other
 
     def update_owner(self, all_houses, all_unites):
+        """Updates owner of the cell. If new army on the cell need to update it's owner in main program"""
         for h in all_houses:
             for u in all_unites:
                 if u.place == self and u.owner == h:
