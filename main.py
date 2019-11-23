@@ -742,6 +742,8 @@ def finish_button_click():
         end_battle()
         game_proc = 'phase_doing_attak'
     elif game_proc == 'phase_doing_money':
+        collect_money()
+        print(stark.money)
         game_proc = 'phase_vesteros'
         phase_vesteros()
 
@@ -919,6 +921,22 @@ def end_battle():
         u.target = u.place
     for u in all_unites:
         u.show()
+
+def collect_money():
+    for c in all_commands:
+        if c.place != 'niht':
+            if c.type == 'money_command' and c.owner == player_status and c.place.castles > 0:
+                collect_army()
+            if c.type == 'money_command' and c.owner == player_status and c.place.castles > 0:
+                comp_collect_army()
+            if c.type == 'money_command' and c.place != 'niht':
+                c.owner.money += 1 + c.place.money
+
+def collect_army():
+    pass
+
+def comp_collect_army():
+    print('типа что-то делает')
 
 root=Tk()
 root.geometry(str(SX()) + 'x' + str(SY()))
