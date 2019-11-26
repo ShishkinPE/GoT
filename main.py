@@ -950,6 +950,7 @@ def end_battle():
     power_attak = 0
     power_defense = 0
     global battle_place, all_leaders, all_unites, all_commands, player_status, game_proc
+
     for u in all_unites:
         if u.target == battle_place and u.place != battle_place and u.unit_type != 'trembling':
             power_attak = power_attak + u.power
@@ -961,13 +962,33 @@ def end_battle():
             attak_player = u.owner
         if u.place == battle_place:
             defense_player = u.owner
+    for c in all_commands:
+        if c.clicked == 1 and c.type == 'attak' and c.owner == attak_player:
+            power_attak += c.power
+        if c.place == battle_place and c.type == 'defence':
+            power_defense += c.power
+    for t in battle_place.sosed:
+        for c in all_commands:
+            if c.place == t and c.type == 'boost':
+                if c.owner == attak_player:
+                    power_attak += c.power
+                if c.owner == defense_player:
+                    power_defense += c.power
+                for u in all_unites:
+                    if u.owner == attak_player and u.unit_type != 'trembling':
+                        power_attak = power_attak + u.power
+                    if u.ownet == attak_player and u.unit_type == 'trembling' and battle_place.castles > 0:
+                        power_attak = power_attak + u.power
+                    if u.owner == defense_player and u.unit_type != 'trembling':
+                        power_defense = power_defense + u.power
     for l in all_leaders:
         if l.clicked == 1 and l.owner == attak_player:
             power_attak = power_attak + l.power
         if l.clicked == 1 and l.owner == defense_player:
             power_defense = power_defense + l.power
-    print('защита: ', power_defense)
-    print('атака', power_attak)
+    power_attak += (6 - attak_player.sword) * 0.1
+    power_defense += (6 - defense_player.sword) * 0.1
+
     battle_window.place(x = -2000, y = 0)
     LeaderD.place(x = -1000, y = 0)
     LeaderA.place(x = -1000, y = 0)
@@ -984,7 +1005,10 @@ def end_battle():
     if z == 0:
         game_proc = 'phase_doing_money'
         phase_doing()
-    # FIXME
+    if power_attak > power_defense:
+        print('победа аткакующих')
+    else:
+        print('победа защищающихся')
     for u in all_unites:
         u.target = u.place
     for u in all_unites:
