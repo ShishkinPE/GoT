@@ -12,8 +12,40 @@ class cell:
         self.army_x=army_x
         self.army_y=army_y
         self.owner = 0
-        self.comp_choose = 0
+        self.comp_chooseG = 0
+        self.comp_chooseT = 0
+        self.comp_chooseL = 0
+        self.comp_chooseS = 0
+        self.comp_chooseM = 0
+        self.comp_chooseB = 0
 
+    def comp_choose_return(self, all_houses, h):
+        if h.name == 'stark':
+            return self.comp_chooseS
+        if h.name == 'lannister':
+            return self.comp_chooseL
+        if h.name == 'tirrel':
+            return self.comp_chooseT
+        if h.name == 'greydjoy':
+            return self.comp_chooseG
+        if h.name == 'barateon':
+            return self.comp_chooseB
+        if h.name == 'martell':
+            return self.comp_chooseM
+
+    def comp_choose_change(self, all_houses, h, change):
+        if h.name == 'stark':
+            self.comp_chooseS = change
+        if h.name == 'lannister':
+            self.comp_chooseL = change
+        if h.name == 'tirrel':
+            self.comp_chooseT = change
+        if h.name == 'greydjoy':
+            self.comp_chooseG = change
+        if h.name == 'barateon':
+            self.comp_chooseB = change
+        if h.name == 'martell':
+            self.comp_chooseM = change
 
     def __eq__(self, other):
         return  self is other

@@ -200,7 +200,7 @@ class fire(command):
                     c.show()
                     self.show()
                     for h in all_houses:
-                        if h.tron % 6 - 1 == player_status.tron % 6:
+                        if (h.tron - 1) % 6 == player_status.tron % 6:
                             comp_doing_fire(h)
 
 class money_command(command):
@@ -255,7 +255,8 @@ class unit:
     def can_attak(self,target):
         global all_territories, all_unites
         re = 0
-        local_sosed = self.place.sosed
+        local_sosed = []
+        local_sosed += self.place.sosed
         for i in range(7):
             for t in local_sosed:
                 for u in all_unites:
@@ -276,8 +277,6 @@ class unit:
             re = 0
         if self.place == target:
             re = 1
-        for s in pidor_port.sosed:
-            print(s.place)
         return re
 
     def show(self):
@@ -590,10 +589,9 @@ def phase_plans():
     root.after(2000, delete_title)
 
 def phase_doing():
-    for s in pidor_port.sosed:
-        print(s.place)
-    global game_proc, all_commands, player_status, all_houses
+    global game_proc, all_commands, player_status, all_houses, number_doing
     if game_proc == 'phase_plans':
+        number_doing = 18
         title_label.place(x=SX()*0.34, y=SY()*0.05)
         title_label.config(text='Фаза действий: набеги')
         root.after(3000, delete_title)
@@ -622,6 +620,8 @@ def phase_doing():
 
 def phase_vesteros():
     #FIXME here add phases of vesteros
+    for c in all_commands:
+        c.place = 'niht'
     phase_plans()
 
 def motion(event):
@@ -703,6 +703,9 @@ def finish_button_click():
         comp_plans()
     elif game_proc == 'phase_doing_fire':
         game_proc='phase_doing_attak'
+        for h in all_houses:
+            if (h.tron - 1) % 6 == player_status.tron % 6:
+                comp_doing_fire(h)
         phase_doing()
     elif game_proc == 'phase_doing_attak':
         z=0
@@ -743,21 +746,23 @@ def finish_button_click():
         game_proc = 'phase_doing_attak'
     elif game_proc == 'phase_doing_money':
         collect_money()
-        print(stark.money)
         game_proc = 'phase_vesteros'
         phase_vesteros()
 
 def comp_plans():
     global all_commands, all_territories, all_houses, all_unites, player_status
-    pass
     for h in all_houses:
+        for t in all_territories:
+            t.comp_choose_change(all_houses, h, 0)
+        for c in all_commands:
+            c.comp_target = 0
         if h != player_status:
             if h.voron == 1 or h.voron == 2:
                 stars = 3
             if h.voron == 3:
                 stars = 2
             if h.voron == 4:
-                stars = 1
+               stars = 1
             if h.voron > 4:
                 stars = 0
             for t in all_territories:
@@ -767,23 +772,45 @@ def comp_plans():
                         allow_put = 1
                         local_unit = u
                 for c in all_commands:
-                    for t2 in all_territories:
-                        if c.owner == h and allow_put == 1 and c.place == 'niht' and c.type == 'attak' and local_unit.can_attak(t2) and t2.castles > 0 and t.type_cell == 'earth' and t2.comp_choose == 0 and t2.owner != h:
+                    if c.type == 'attak':
+                        for t2 in all_territories:
+                            if c.owner == h and allow_put == 1 and local_unit.can_attak(t2) and c.place == 'niht' and c.type == 'attak' and t2.castles > 0 and t2.comp_choose_return(all_houses, h) == 0  and t2.owner != h and t.type_cell == 'earth':
+                                if stars > 0 and c.st == 1:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    t2.comp_choose_change(all_houses, h, 1)
+                                    stars = stars - 1
+                                    c.comp_target = t2
+                                elif c.st == 0:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    t2.comp_choose_change(all_houses, h, 1)
+                                    c.comp_target = t2
+                for c in all_commands:
+                    if stars > 0 and c.type == 'money_command' and c.st == 1 and allow_put == 1 and t.castles > 0 and c.place =='niht':
+                        allow_put = 0
+                        c.place = t
+                        c.show()
+                        stars = stars - 1
+                    if t.type_cell == 'water' and allow_put == 1 and c.type == 'attak' and c.owner == h and c.place == 'niht':
+                        z = 0
+                        for u in all_unites:
+                            if u.owner == h and u.place == t:
+                                z = z + 1
+                        if z > 1:
                             if stars > 0 and c.st == 1:
                                 allow_put = 0
                                 c.place = t
                                 c.show()
-                                t2.comp_choose = 1
                                 stars = stars - 1
-                                c.comp_target = t2
                             elif c.st == 0:
                                 allow_put = 0
                                 c.place = t
                                 c.show()
-                                t2.comp_choose = 1
-                                c.comp_target = t2
-                    """for s in t.sosed:
-                        if c.owner == h and c.type == 'fire' and allow_put == 1 and c.place == 'niht' and s.owner != 0 and s.owner != h:
+                    for s in t.sosed:
+                        if c.owner == h and c.type == 'boost' and allow_put == 1 and c.place == 'niht' and s.owner != 0 and s.owner != h and s.comp_choose_return(all_houses, h) == 1:
                             if stars > 0 and c.st == 1:
                                 allow_put = 0
                                 c.place = t
@@ -792,28 +819,69 @@ def comp_plans():
                             elif c.st == 0:
                                 allow_put = 0
                                 c.place = t
-                                c.show()"""
+                                c.show()
+                for c in all_commands:
+                    if c.type == 'fire':
+                        for s in t.sosed:
+                            if c.owner == h and c.type == 'fire' and allow_put == 1 and c.place == 'niht' and s.owner != 0 and s.owner != h:
+                                if stars > 0 and c.st == 1:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    stars = stars - 1
+                                elif c.st == 0:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                for c in all_commands:
+                    if c.type == 'defense':
+                        for s in t.sosed:
+                            if c.owner == h and c.type == 'defense' and allow_put == 1 and c.place == 'niht' and s.owner != 0 and s.owner != h:
+                                for u in all_unites:
+                                    if s.owner == u.owner:
+                                        if stars > 0 and c.st == 1:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+                                            stars = stars - 1
+                                        elif c.st == 0:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+                for c in all_commands:
+                    if c.st == 0 and c.place == 'niht' and allow_put == 1 and c.owner == h and c.type == 'money_command' and t.type_cell == 'earth':
+                        allow_put = 0
+                        c.place = t
+                        c.show()
 
 def comp_doing_fire(fire_owner):
-    global all_commands, player_status, all_houses
+    global all_commands, player_status, all_houses, number_doing
+    number_doing = number_doing - 1
+    print(fire_owner.name)
     z = 0
     for c in all_commands:
         if c.owner == fire_owner and c.type == 'fire' and z == 0 and c.place != 'niht':
             z = 1
             z2 = 0
+            print(fire_owner.name)
             for c2 in all_commands:
                 if c2.owner != fire_owner and z2 == 0:
-                    print(c.place)
                     for s in c.place.sosed:
-                        if c2.place.name == s.name:
-                            c2.place = 'niht'
-                            c.place = 'niht'
-                            c.show()
-                            c2.show()
-                            z2 = 1
+                        if c2.place != 'niht':
+                            if c2.place == s:
+                                c2.place = 'niht'
+                                c.place = 'niht'
+                                c.show()
+                                c2.show()
+                                z2 = 1
+                                print(fire_owner.name)
     for h in all_houses:
-        if h.tron % 6 - 1 == fire_owner.tron % 6 and h != player_status:
+        if (h.tron - 1) % 6 == fire_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_fire(h)
+        elif game_proc != 'phase_doing_fire' and (h.tron - 1) % 6 == fire_owner.tron % 6 and h == player_status:
+            for h2 in all_houses:
+                if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
+                    comp_doing_fire(h2)
 
 def comp_doing_attak(attak_owner):
     for h in all_houses:
