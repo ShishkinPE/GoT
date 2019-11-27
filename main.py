@@ -401,6 +401,9 @@ def create_unites():
     global all_unites
     """create start unites u == unit s == stark r == greydjoy"""
     us1 = unit('knight', winterfall, stark, 1)
+    ustest = unit('footman', chernovodnaya, stark, 2)
+    ustest2 = unit('footman', chernovodnaya, stark, 2)
+    ustest3 = unit('footman', chernovodnaya, stark, 2)
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
@@ -428,7 +431,7 @@ def create_unites():
     ul4 = unit('knight', pidortown, lannister,1)
     ul5 = unit('ship', pidor_port, lannister,1)
 
-    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
+    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5, ustest, ustest2, ustest3]
 
     for u in all_unites:
         u.show()
@@ -604,6 +607,7 @@ def phase_doing():
         Finish_button.config(text='В поход!')
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: походы')
+        number_doing = 18
         root.after(3000, delete_title)
         z = 0
         for c in all_commands:
@@ -699,8 +703,8 @@ def main_click(event):
 def finish_button_click():
     global game_proc, all_unites, all_houses, all_commands
     if game_proc == 'phase_plans':
-        phase_doing()
         comp_plans()
+        phase_doing()
     elif game_proc == 'phase_doing_fire':
         game_proc='phase_doing_attak'
         for h in all_houses:
@@ -857,24 +861,21 @@ def comp_plans():
 def comp_doing_fire(fire_owner):
     global all_commands, player_status, all_houses, number_doing
     number_doing = number_doing - 1
-    print(fire_owner.name)
     z = 0
     for c in all_commands:
-        if c.owner == fire_owner and c.type == 'fire' and z == 0 and c.place != 'niht':
+        if c.owner.name == fire_owner.name and c.type == 'fire' and z == 0 and c.place != 'niht':
             z = 1
             z2 = 0
-            print(fire_owner.name)
             for c2 in all_commands:
                 if c2.owner != fire_owner and z2 == 0:
                     for s in c.place.sosed:
                         if c2.place != 'niht':
-                            if c2.place == s:
+                            if c2.place == s and (c2.type == 'fire' or c2.type == 'boost' or c2.type == 'money_command' or (c2.type == 'defense' and c.st == 1)):
                                 c2.place = 'niht'
                                 c.place = 'niht'
                                 c.show()
                                 c2.show()
                                 z2 = 1
-                                print(fire_owner.name)
     for h in all_houses:
         if (h.tron - 1) % 6 == fire_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_fire(h)
@@ -884,9 +885,15 @@ def comp_doing_fire(fire_owner):
                     comp_doing_fire(h2)
 
 def comp_doing_attak(attak_owner):
+    global number_doing
+    number_doing = number_doing -1
     for h in all_houses:
-        if h != player_status and h.tron % 6 == attak_owner.tron % 6 +1:
-            comp_doing_attak(h)
+        if (h.tron - 1) % 6 == fire_owner.tron % 6 and h != player_status and number_doing > 0:
+            comp_doing_fire(h)
+        elif game_proc != 'phase_doing_fire' and (h.tron - 1) % 6 == fire_owner.tron % 6 and h == player_status:
+            for h2 in all_houses:
+                if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
+                    comp_doing_fire(h2)
 
 def delete_title():
     title_label.place(x=-1000, y=0)
@@ -977,7 +984,7 @@ def end_battle():
                 for u in all_unites:
                     if u.owner == attak_player and u.unit_type != 'trembling':
                         power_attak = power_attak + u.power
-                    if u.ownet == attak_player and u.unit_type == 'trembling' and battle_place.castles > 0:
+                    if u.owner == attak_player and u.unit_type == 'trembling' and battle_place.castles > 0:
                         power_attak = power_attak + u.power
                     if u.owner == defense_player and u.unit_type != 'trembling':
                         power_defense = power_defense + u.power
