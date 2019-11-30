@@ -608,6 +608,9 @@ def phase_doing():
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: походы')
         number_doing = 18
+        for h in all_houses:
+            if h.tron == 1 and h != player_status:
+                comp_doing_attak(h)
         root.after(3000, delete_title)
         z = 0
         for c in all_commands:
@@ -736,7 +739,7 @@ def finish_button_click():
                     c.place = 'niht'
                     c.show()
             for h in all_houses:
-                if h.tron == 1 and h != player_status:
+                if (h.tron - 1) % 6 == player_status.tron:
                     comp_doing_attak(h)
         z = 0
         for c in all_commands:
@@ -744,6 +747,9 @@ def finish_button_click():
                 z = 1
         if z == 0:
             game_proc = 'phase_doing_money'
+            for h in all_houses:
+                if (h.tron - 1) % 6 == player_status.tron:
+                    comp_doing_attak(h)
             phase_doing()
     elif game_proc == 'battle':
         end_battle()
@@ -885,15 +891,43 @@ def comp_doing_fire(fire_owner):
                     comp_doing_fire(h2)
 
 def comp_doing_attak(attak_owner):
+    print(attak_owner.name)
     global number_doing
+    print(number_doing)
     number_doing = number_doing -1
+    z2 = 1
+    for c in all_commands:
+        if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1:
+            local_units = []
+            for u in all_unites:
+                if u.place == c.place:
+                    local_units.append(u)
+            for t in all_territories:
+                if t.comp_choose_return(all_houses, attak_owner) == 1:
+                    z = 0
+                    bat = 0
+                    for u in local_units:
+                        if u.can_attak(t):
+                            z = 1
+                    if z == 1:
+                        for u in all_unites:
+                            if u.owner != attak_owner and u.place == t:
+                                bat = 1
+                        if bat == 0:
+                            for u in local_units:
+                                u.place = t
+                                u.show
+                                c.place = 'niht'
+                                c.show()
+                                for t2 in all_territories:
+                                    t2.update_owner(all_houses, all_unites)
     for h in all_houses:
-        if (h.tron - 1) % 6 == fire_owner.tron % 6 and h != player_status and number_doing > 0:
-            comp_doing_fire(h)
-        elif game_proc != 'phase_doing_fire' and (h.tron - 1) % 6 == fire_owner.tron % 6 and h == player_status:
+        if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
+            comp_doing_attak(h)
+        elif game_proc != 'phase_doing_attak' and (h.tron - 1) % 6 == attak_owner.tron % 6 and h == player_status:
             for h2 in all_houses:
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
-                    comp_doing_fire(h2)
+                    comp_doing_attak(h2)
 
 def delete_title():
     title_label.place(x=-1000, y=0)
