@@ -232,6 +232,9 @@ class money_command(command):
         self.show()
 
 class unit:
+    def __eq__(self, other):
+        return self is other
+
     def __init__(self, unit_type, place, owner, place_number):
         global h, image_map, images, all_unites
         self.unit_type=unit_type
@@ -293,6 +296,14 @@ class unit:
     def show_battle(self, number, type):
         self.id2.place(x = 20 + type * 96, y = 310 + number * 65)
 
+    def die(self):
+        global all_unites
+        for u in all_unites:
+            if u == self:
+                all_unites.remove(u)
+        self.place = walhalla
+        self.target = walhalla
+        self.show()
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
         self.name = name
@@ -764,6 +775,9 @@ def finish_button_click():
         phase_vesteros()
 
 def comp_plans():
+    pass
+
+def comp_plans1():
     global all_commands, all_territories, all_houses, all_unites, player_status
     for h in all_houses:
         for t in all_territories:
@@ -1051,11 +1065,18 @@ def end_battle():
         game_proc = 'phase_doing_money'
         phase_doing()
     if power_attak > power_defense:
-        print('победа аткакующих')
+        local_all_unites = []
+        local_all_unites += all_unites
+        for u in local_all_unites:
+            if u.place == battle_place:
+                u.die()
+        for u in all_unites:
+            if u.target == battle_place:
+                u.place = battle_place
+        battle_place.update_owner(all_houses, all_unites)
     else:
-        print('победа защищающихся')
-    for u in all_unites:
-        u.target = u.place
+        for u in all_unites:
+            u.target = u.place
     for u in all_unites:
         u.show()
 
@@ -1070,6 +1091,7 @@ def collect_money():
             if c.type == 'money_command' and c.place != 'niht':
                 c.owner.money += 1 + c.place.money
         money_label.config(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
+
 def collect_army():
     pass
 

@@ -115,7 +115,7 @@ east_summer_more=cell('east_summer_more',0,0,0,[],'water', 979, 2381, 975, 2291)
 dorn_more=cell('dorn_more',0,0,0,[],'water', 902, 2026, 904, 2041)
 gubitelnie_vali=cell('gubitelnie_vali',0,0,0,[],'water', 1217, 1663, 1184, 1678)
 chernovod_zaliv=cell('chernovod_zaliv',0,0,0,[],'water', 1003, 1501, 968, 1527)
-
+walhalla = cell('walhalla',0,0,0,'nowher',[], -500, -500, -500, -500)
 cherniy_zamok.sosed=[karhold, winterfall,drozhashee_more, ledoviy_zaliv]
 winterfall.sosed=[karhold, belaya_gavan ,drozhashee_more, ledoviy_zaliv, winterfall_port, kamenniy_bereg, rov_keylin, cherniy_zamok]
 karhold.sosed=[winterfall,cherniy_zamok, drozhashee_more]
@@ -174,6 +174,7 @@ west_summer_more.sosed = [arbor, proliv_redvin, zakatnoe_more, east_summer_more,
 three_bashni.sosed = [staromest, dorn_marks, prince_pereval, proliv_redvin, west_summer_more]
 staromest.sosed = [three_bashni, dorn_marks, higarden, staromest_port, proliv_redvin]
 staromest_port.sosed = [staromest, proliv_redvin]
+
 all_territories = [winterfall, rov_keylin, cherniy_zamok, belaya_gavan, drozhashee_more, winterfall_port,
                    uzkoe_more, white_port, karhold, vdoviy_dozor, ledoviy_zaliv, kamenniy_bereg, serovodye,
                    kremen, zakatnoe_more, zaliv_zheleznyh_ludey, payk, payk_port, sigard, bliznetsy, persti,
