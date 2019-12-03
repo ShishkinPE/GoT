@@ -90,7 +90,9 @@ class attak(command):
             for c in all_commands:
                 c.clicked = 0
             for u in all_unites:
+                u.target = u.place
                 u.clicked = 0
+            for u in all_unites:
                 u.show()
             self.clicked = 1
         if self.clicked == 1:
