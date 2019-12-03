@@ -529,7 +529,7 @@ def choise_house_click(x, y):
         return 'choise'
 
 def start_game():
-    global game_proc, player_status, all_unites, images
+    global game_proc, player_status, all_unites, images, money_label
     create_unites()
     if game_proc=='barateon':
         barateon.status='player'
@@ -581,6 +581,9 @@ def start_game():
         create_track()
         player_status=stark
         phase_plans()
+
+    money_label = Label(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
+    money_label.place(x=0, y=(SY() - 19))
 
 def phase_plans():
     global game_proc, all_commands, player_status
@@ -640,7 +643,6 @@ def motion(event):
             show_track()
         else:
             close_track()
-
     if game_proc == 'phase_plans':
         if (event.x > SX() - 50)  and (event.y < 50 - h):
             for c in all_commands:
@@ -1058,6 +1060,7 @@ def end_battle():
         u.show()
 
 def collect_money():
+    global  money_label
     for c in all_commands:
         if c.place != 'niht':
             if c.type == 'money_command' and c.owner == player_status and c.place.castles > 0:
@@ -1066,7 +1069,7 @@ def collect_money():
                 comp_collect_army()
             if c.type == 'money_command' and c.place != 'niht':
                 c.owner.money += 1 + c.place.money
-
+        money_label.config(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
 def collect_army():
     pass
 
