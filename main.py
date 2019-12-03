@@ -265,7 +265,7 @@ class unit:
         for i in range(7):
             for t in local_sosed:
                 for u in all_unites:
-                    if u.unit_type == 'ship' and u.place == t:
+                    if u.unit_type == 'ship' and u.place == t and u.owner == self.owner:
                         for t1 in t.sosed:
                             q = 1
                             for t2 in local_sosed:
