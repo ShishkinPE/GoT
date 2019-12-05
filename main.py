@@ -256,6 +256,7 @@ class unit:
         images.append(self.img)
         self.id = Label(image_map, image = self.img)
         self.id2 = Label(battle_window, image=self.img)
+        self.health = 1
 
     def can_attak(self,target):
         global all_territories, all_unites
@@ -321,8 +322,10 @@ class house:
         return self is other
 
 class leaders:
-    def __init__(self, owner, name, power):
+    def __init__(self, owner, name, power, swords = 0, towers = 3):
         self.owner = owner
+        self.swords = swords
+        self.towers = towers
         self.name = name
         self.power = power
         self.clicked = 0
@@ -639,6 +642,8 @@ def phase_vesteros():
     #FIXME here add phases of vesteros
     for c in all_commands:
         c.place = 'niht'
+    for u in all_unites:
+        u.health = 1
     phase_plans()
 
 def motion(event):
@@ -998,17 +1003,23 @@ def battle_graphic():
                 att_help += 1
 
 def end_battle():
+    attak_swords = 0
+    attak_towers = 0
+    defence_swords = 0
+    defence_towers = 0
     power_attak = 0
     power_defense = 0
     global battle_place, all_leaders, all_unites, all_commands, player_status, game_proc
-
+    for u in all_unites:
+        if u.target == battle_place and u.place != battle_place:
+            attak_place = u.target
     for u in all_unites:
         if u.target == battle_place and u.place != battle_place and u.unit_type != 'trembling':
-            power_attak = power_attak + u.power
+            power_attak = power_attak + u.power * u.health
         if u.target == battle_place and u.place != battle_place and u.unit_type == 'trembling' and battle_place.castles > 0:
-            power_attak = power_attak + u.power
+            power_attak = power_attak + u.power * u.health
         if u.place == battle_place and u.unit_type != 'trembling':
-            power_defense = power_defense + u.power
+            power_defense = power_defense + u.power * u.health
         if u.target == battle_place and u.place != battle_place:
             attak_player = u.owner
         if u.place == battle_place:
@@ -1027,16 +1038,20 @@ def end_battle():
                     power_defense += c.power
                 for u in all_unites:
                     if u.owner == attak_player and u.unit_type != 'trembling':
-                        power_attak = power_attak + u.power
+                        power_attak = power_attak + u.power * u.health
                     if u.owner == attak_player and u.unit_type == 'trembling' and battle_place.castles > 0:
-                        power_attak = power_attak + u.power
+                        power_attak = power_attak + u.power * u.health
                     if u.owner == defense_player and u.unit_type != 'trembling':
-                        power_defense = power_defense + u.power
+                        power_defense = power_defense + u.power * u.health
     for l in all_leaders:
         if l.clicked == 1 and l.owner == attak_player:
             power_attak = power_attak + l.power
+            attak_swords = l.swords
+            attak_towers = l.towers
         if l.clicked == 1 and l.owner == defense_player:
             power_defense = power_defense + l.power
+            defence_swords = l.swords
+            defence_towers = l.towers
     power_attak += (6 - attak_player.sword) * 0.1
     power_defense += (6 - defense_player.sword) * 0.1
 
@@ -1058,17 +1073,58 @@ def end_battle():
         phase_doing()
     if power_attak > power_defense:
         local_all_unites = []
+        def_unites = []
         local_all_unites += all_unites
         for u in local_all_unites:
             if u.place == battle_place:
+                def_unites.append(u)
+        died_u = attak_swords - defence_towers
+        if died_u < 0:
+            died_u = 0
+        for i in range(died_u):
+            if def_unites and died_u:
+                u = choice(def_unites)
+                def_unites.remove(u)
                 u.die()
+        while def_unites:
+            u = def_unites[0]
+            t_run = []
+            for t in all_territories:
+                if u.can_attak(t) and t != attak_place:
+                    t_run += [t]
+            if t_run:
+                run_place = choice(t_run)
+                u.place = run_place
+                u.target = run_place
+                u.show()
+                u.health = 0
+                def_unites.remove(u)
+            else:
+                def_unites.remove(u)
+                u.die()
+
         for u in all_unites:
             if u.target == battle_place:
                 u.place = battle_place
         battle_place.update_owner(all_houses, all_unites)
-    else:
-        for u in all_unites:
+    else: #if defence player win battle
+        local_all_unites = []
+        att_unites = []
+        local_all_unites += all_unites
+        for u in local_all_unites:
+            if u.target == battle_place and u.place != battle_place:
+                att_unites.append(u)
+        died_u = defence_swords - attak_towers
+        if died_u < 0:
+            died_u = 0
+        for i in range(died_u):
+            if att_unites and died_u:
+                u = choice(att_unites)
+                att_unites.remove(u)
+                u.die()
+        for u in att_unites:
             u.target = u.place
+            u.health = 0
     for u in all_unites:
         u.show()
 
