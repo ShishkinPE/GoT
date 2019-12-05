@@ -642,8 +642,10 @@ def phase_vesteros():
     #FIXME here add phases of vesteros
     for c in all_commands:
         c.place = 'niht'
+        c.clicked = 0
     for u in all_unites:
         u.health = 1
+        u.clicked = 0
     phase_plans()
 
 def motion(event):
@@ -813,7 +815,7 @@ def comp_plans():
                                     t2.comp_choose_change(all_houses, h, 1)
                                     c.comp_target = t2
                 for c in all_commands:
-                    if stars > 0 and c.type == 'money_command' and c.st == 1 and allow_put == 1 and t.castles > 0 and c.place =='niht':
+                    if stars > 0 and c.type == 'money_command' and c.owner == h and c.st == 1 and allow_put == 1 and t.castles > 0 and c.place =='niht':
                         allow_put = 0
                         c.place = t
                         c.show()
@@ -919,23 +921,39 @@ def comp_doing_attak(attak_owner):
                 if t.comp_choose_return(all_houses, attak_owner) == 1:
                     z = 0
                     bat = 0
-                    for u in local_units:
-                        if u.can_attak(t) and u.clicked == 0:
-                            if u.owner != attak_owner and u.place == t:
+                    u = local_units[0]
+                    if u.can_attak(t) and c.place != 'niht':
+                        for u2 in all_unites:
+                            if u2.owner != attak_owner and u2.place == t:
                                 bat = 1
-                            if bat == 0:
-                                for u in local_units:
-                                    u.place = t
-                                    u.target = t
-                                    c.place = 'niht'
-                                    u.clicked = 1
-                                    t.comp_choose_change(all_houses, c.owner, 0)
-                                    c.show()
-                                    z2 = 0
-                                    for t2 in all_territories:
-                                        t2.update_owner(all_houses, all_unites)
-                                for u in all_unites:
-                                    u.show()
+                        if bat == 0:
+                            for u in local_units:
+                                u.place = t
+                                u.target = t
+                                c.place = 'niht'
+                                u.clicked = 1
+                                t.comp_choose_change(all_houses, c.owner, 0)
+                                c.show()
+                                z2 = 0
+                                for t2 in all_territories:
+                                    t2.update_owner(all_houses, all_unites)
+                            for u in all_unites:
+                                u.show()
+                            for t in all_territories:
+                                t.update_owner(all_houses, all_unites)
+                        elif bat == 1:
+                            for u in local_units:
+                                u.target = t
+                                u.clicked = 1
+                                c.clicked = 1
+                                c.place ='niht'
+                                t.comp_choose_change(all_houses, c.owner, 0)
+                                global battle_place
+                                battle_place = t
+                            for t in all_territories:
+                                t.update_owner(all_houses, all_unites)
+                            end_battle()
+
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_attak(h)
@@ -1090,9 +1108,10 @@ def end_battle():
             u = def_unites[0]
             t_run = []
             for t in all_territories:
-                if u.can_attak(t) and t != attak_place:
+                t.update_owner(all_houses, all_unites)
+                if u.can_attak(t) and (t.owner == 0 or t.owner == u.owner) and u.health > 0 and t != battle_place:
                     t_run += [t]
-            if t_run:
+            if t_run != []:
                 run_place = choice(t_run)
                 u.place = run_place
                 u.target = run_place
@@ -1122,11 +1141,16 @@ def end_battle():
                 u = choice(att_unites)
                 att_unites.remove(u)
                 u.die()
-        for u in att_unites:
-            u.target = u.place
-            u.health = 0
+        for u in all_unites:
+            if u.target != u.place:
+                u.target = u.place
+                u.health = 0
     for u in all_unites:
         u.show()
+    for c in all_commands:
+        c.clicked = 0
+    for u in all_unites:
+        u.clicked = 0
 
 def collect_money():
     global  money_label
@@ -1145,6 +1169,13 @@ def collect_army():
 
 def comp_collect_army():
     print('типа что-то делает')
+
+def test_button():
+    for t in all_territories:
+        if t.owner != 0:
+            print(t.place+' '+str(t.owner.name))
+        else:
+            print(t.place+' niht')
 
 root=Tk()
 root.geometry(str(SX()) + 'x' + str(SY()))
@@ -1189,6 +1220,8 @@ image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
 
 Finish_button=Button(root, text = 'дима мокеев петух', command = finish_button_click)
+Test_button=Button(root, text = 'дима мокеев петух', command = test_button)
+Test_button.place(x=200, y=50)
 title_label=Label(root, text='дима мокеев петух')
 path = "media/test.gif"
 img2 = PhotoImage(file=path)
