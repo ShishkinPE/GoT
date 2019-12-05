@@ -37,7 +37,7 @@ class command:
         if player_status.voron == 3:
             pst = 2
         if player_status.voron == 4:
-            pst == 1
+            pst = 1
         for t in all_territories:
             t.update_owner(all_houses, all_unites)
             if (pst > stars or self.st == 0) and t.owner == player_status and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
@@ -304,6 +304,7 @@ class unit:
         self.place = walhalla
         self.target = walhalla
         self.show()
+
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
         self.name = name
@@ -569,13 +570,6 @@ def start_game():
         lannister.status='player'
         show_map(canv)
         create_track()
-        # DO NOT FIX!!! I need this part of cod
-        for i in range(15):
-            x = randint(100, SX() - 100)
-            y = randint(100, SY() - 100)
-            l = Label(text = 'дима мокеев петух')
-            l.place(x = x, y =y)
-        ########################################
         player_status = lannister
         phase_plans()
 
@@ -624,9 +618,6 @@ def phase_doing():
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: походы')
         number_doing = 18
-        for h in all_houses:
-            if h.tron == 1 and h != player_status:
-                comp_doing_attak(h)
         root.after(3000, delete_title)
         z = 0
         for c in all_commands:
@@ -635,6 +626,9 @@ def phase_doing():
         if z == 0:
             game_proc = 'phase_doing_money'
             phase_doing()
+        for h in all_houses:
+            if h.tron == 1 and h != player_status:
+                comp_doing_attak(h)
     elif game_proc == 'phase_doing_money':
         title_label.place(x=SX() * 0.34, y=SY() * 0.05)
         title_label.config(text='Фаза действий: сбор власти')
@@ -730,14 +724,14 @@ def finish_button_click():
                 comp_doing_fire(h)
         phase_doing()
     elif game_proc == 'phase_doing_attak':
-        z=0
+        z = 0
         for u1 in all_unites:
             for u2 in all_unites:
                 if u1.target == u2.place and u1.owner != u2.owner:
-                    if z==0 or z==u1.target:
-                        z=u1.target
+                    if z == 0 or z == u1.target:
+                        z = u1.target
                     else:
-                        z=1
+                        z = 1
         if z != 0 and z != 1:
             game_proc='battle'
             global battle_place
@@ -754,7 +748,7 @@ def finish_button_click():
                     c.place = 'niht'
                     c.show()
             for h in all_houses:
-                if (h.tron - 1) % 6 == player_status.tron:
+                if (h.tron - 1) % 6 == player_status.tron % 6:
                     comp_doing_attak(h)
         z = 0
         for c in all_commands:
@@ -763,21 +757,18 @@ def finish_button_click():
         if z == 0:
             game_proc = 'phase_doing_money'
             for h in all_houses:
-                if (h.tron - 1) % 6 == player_status.tron:
+                if (h.tron - 1) % 6 == player_status.tron % 6:
                     comp_doing_attak(h)
             phase_doing()
     elif game_proc == 'battle':
-        end_battle()
         game_proc = 'phase_doing_attak'
+        end_battle()
     elif game_proc == 'phase_doing_money':
         collect_money()
         game_proc = 'phase_vesteros'
         phase_vesteros()
 
 def comp_plans():
-    pass
-
-def comp_plans1():
     global all_commands, all_territories, all_houses, all_unites, player_status
     for h in all_houses:
         for t in all_territories:
@@ -909,9 +900,7 @@ def comp_doing_fire(fire_owner):
                     comp_doing_fire(h2)
 
 def comp_doing_attak(attak_owner):
-    print(attak_owner.name)
     global number_doing
-    print(number_doing)
     number_doing = number_doing -1
     z2 = 1
     for c in all_commands:
@@ -920,25 +909,28 @@ def comp_doing_attak(attak_owner):
             for u in all_unites:
                 if u.place == c.place:
                     local_units.append(u)
+                    u.clicked == 0
             for t in all_territories:
                 if t.comp_choose_return(all_houses, attak_owner) == 1:
                     z = 0
                     bat = 0
                     for u in local_units:
-                        if u.can_attak(t):
-                            z = 1
-                    if z == 1:
-                        for u in all_unites:
+                        if u.can_attak(t) and u.clicked == 0:
                             if u.owner != attak_owner and u.place == t:
                                 bat = 1
-                        if bat == 0:
-                            for u in local_units:
-                                u.place = t
-                                u.show
-                                c.place = 'niht'
-                                c.show()
-                                for t2 in all_territories:
-                                    t2.update_owner(all_houses, all_unites)
+                            if bat == 0:
+                                for u in local_units:
+                                    u.place = t
+                                    u.target = t
+                                    c.place = 'niht'
+                                    u.clicked = 1
+                                    t.comp_choose_change(all_houses, c.owner, 0)
+                                    c.show()
+                                    z2 = 0
+                                    for t2 in all_territories:
+                                        t2.update_owner(all_houses, all_unites)
+                                for u in all_unites:
+                                    u.show()
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_attak(h)
