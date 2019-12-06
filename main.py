@@ -324,7 +324,7 @@ class house:
         return self is other
 
 class leaders:
-    def __init__(self, owner, name, power, swords = 0, towers = 3):
+    def __init__(self, owner, name, power, swords, towers):
         self.owner = owner
         self.swords = swords
         self.towers = towers
@@ -512,21 +512,37 @@ def create_command():
         all_commands.append(money_command_2)
 
 def create_leaders():
-    leader=leaders(stark, 'Ruse', 2)
+    leader=leaders(stark, 'Ruse', 2, 2, 0)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Katya', 0)
+    leader = leaders(stark, 'Katya', 0, 0, 2)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Robb', 3)
+    leader = leaders(stark, 'Robb', 3, 3, 0)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Bran', 1)
+    leader = leaders(stark, 'Bran', 3, 0, 3)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Eddard', 4)
+    leader = leaders(stark, 'Eddard', 4, 2, 0)
     all_leaders.append(leader)
-    leader = leaders(stark, 'John', 2)
+    leader = leaders(stark, 'John', 2, 1, 0)
     all_leaders.append(leader)
-    leader = leaders(stark, 'Ser', 1)
+    leader = leaders(stark, 'Ser', 1, 0, 2)
     all_leaders.append(leader)
-    leader = leaders(stark, 'stark', 0)
+    leader = leaders(stark, 'stark', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'lannister', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'ser', 3, 3, 0)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'kivan', 1, 1, 0)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'pes', 2, 0, 2)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'djeime', 2, 1, 0)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'tirion', 3, 0, 1)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'tayvin', 4, 0, 3)
+    all_leaders.append(leader)
+    leader = leaders(lannister, 'serseya', 0, 3, 0)
     all_leaders.append(leader)
 
 def choise_house_click(x, y):
