@@ -544,6 +544,22 @@ def create_leaders():
     all_leaders.append(leader)
     leader = leaders(lannister, 'serseya', 0, 3, 0)
     all_leaders.append(leader)
+    leader = leaders(martell, 'martell', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'areo', 3, 0, 1)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'arianna', 3, 0, 2)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'doran', 0, 0, 3)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'gerold', 2, 1, 0)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'nimeria', 1, 1, 1)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'obara', 2, 1, 0)
+    all_leaders.append(leader)
+    leader = leaders(martell, 'oberin', 4, 2, 1)
+    all_leaders.append(leader)
 
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
