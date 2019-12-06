@@ -5,6 +5,8 @@ from time import *
 from consts import *
 from Territory import *
 
+
+
 class command:
     def close(self):
         if self.place == 'niht':
@@ -478,8 +480,8 @@ def create_track():
 def create_command():
     global all_houses
     for h in all_houses:
-        attak_1=attak(-1, h, SX() - 45, 0)
-        attak_2=attak(0, h, SX() - 45, 45)
+        attak_1=attak(0, h, SX() - 45, 0)
+        attak_2=attak(-1, h, SX() - 45, 45)
         attak_3=attak(1, h, SX() - 45, 90)
         boost_1=boost(0, h, SX() - 90, 0)
         boost_2=boost(0, h, SX() - 90, 45)
@@ -754,22 +756,23 @@ def finish_button_click():
                     c.clicked = 0
                     c.place = 'niht'
                     c.show()
-            for h in all_houses:
-                if (h.tron - 1) % 6 == player_status.tron % 6:
-                    comp_doing_attak(h)
-        z = 0
+        z2 = 0
         for c in all_commands:
             if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
-                z = 1
-        if z == 0:
+                z2 = 1
+        if z2 == 0:
             game_proc = 'phase_doing_money'
             for h in all_houses:
                 if (h.tron - 1) % 6 == player_status.tron % 6:
                     comp_doing_attak(h)
             phase_doing()
+        if z == 0:
+            for h in all_houses:
+                if (h.tron - 1) % 6 == player_status.tron % 6:
+                    comp_doing_attak(h)
     elif game_proc == 'battle':
         game_proc = 'phase_doing_attak'
-        end_battle()
+        comp_choose_leader()
     elif game_proc == 'phase_doing_money':
         collect_money()
         game_proc = 'phase_vesteros'
@@ -797,6 +800,75 @@ def comp_plans():
                     if u.owner == h and u.place == t:
                         allow_put = 1
                         local_unit = u
+                for c in all_commands:
+                    if c.place == t:
+                        allow_put = 0
+                for c in all_commands:
+                    if c.type == 'attak':
+                        for t2 in all_territories:
+                            if c.owner == h and allow_put == 1 and local_unit.can_attak(t2) and c.place == 'niht' and c.type == 'attak' and t2.castles > 0 and t2.comp_choose_return(all_houses, h) == 0  and t2.owner ==player_status and t.type_cell == 'earth':
+                                if stars > 0 and c.st == 1:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    t2.comp_choose_change(all_houses, h, 1)
+                                    stars = stars - 1
+                                    c.comp_target = t2
+                                elif c.st == 0:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    t2.comp_choose_change(all_houses, h, 1)
+                                    c.comp_target = t2
+                    for s in t.sosed:
+                        if c.owner == h and c.type == 'boost' and allow_put == 1 and c.place == 'niht' and s.owner == player_status and s.comp_choose_return(all_houses, h) == 1:
+                            if stars > 0 and c.st == 1:
+                                allow_put = 0
+                                c.place = t
+                                c.show()
+                                stars = stars - 1
+                            elif c.st == 0:
+                                allow_put = 0
+                                c.place = t
+                                c.show()
+                for c in all_commands:
+                    if c.type == 'fire':
+                        for s in t.sosed:
+                            if c.owner == h and c.type == 'fire' and allow_put == 1 and c.place == 'niht' and s.owner == player_status and t.castles == 0:
+                                if stars > 0 and c.st == 1:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    stars = stars - 1
+                                elif c.st == 0:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                for c in all_commands:
+                    if c.type == 'defense':
+                        for s in t.sosed:
+                            if c.owner == h and c.type == 'defense' and allow_put == 1 and c.place == 'niht' and s.owner == player_status:
+                                for u in all_unites:
+                                    if s.owner == u.owner:
+                                        if stars > 0 and c.st == 1:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+                                            stars = stars - 1
+                                        elif c.st == 0:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+
+            for t in all_territories:
+                allow_put = 0
+                for u in all_unites:
+                    if u.owner == h and u.place == t:
+                        allow_put = 1
+                        local_unit = u
+                for c in all_commands:
+                    if c.place == t:
+                        allow_put = 0
                 for c in all_commands:
                     if c.type == 'attak':
                         for t2 in all_territories:
@@ -894,6 +966,7 @@ def comp_doing_fire(fire_owner):
                         if c2.place != 'niht':
                             if c2.place == s and (c2.type == 'fire' or c2.type == 'boost' or c2.type == 'money_command' or (c2.type == 'defense' and c.st == 1)):
                                 c2.place = 'niht'
+                                print(c2.owner.name +'уничтоже '+c.owner.name+'в провинции'+c.place.place)
                                 c.place = 'niht'
                                 c.show()
                                 c2.show()
@@ -926,6 +999,7 @@ def comp_doing_attak(attak_owner):
                         for u2 in all_unites:
                             if u2.owner != attak_owner and u2.place == t:
                                 bat = 1
+                                enemy = u2.owner
                         if bat == 0:
                             for u in local_units:
                                 u.place = t
@@ -952,7 +1026,15 @@ def comp_doing_attak(attak_owner):
                                 battle_place = t
                             for t in all_territories:
                                 t.update_owner(all_houses, all_unites)
-                            end_battle()
+                            if enemy == player_status:
+                                global game_proc
+                                game_proc = 'battle'
+                                battle_graphic()
+                            else:
+                                end_battle()
+
+    for u in all_unites:
+        u.clicked = 0
 
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
@@ -961,6 +1043,9 @@ def comp_doing_attak(attak_owner):
             for h2 in all_houses:
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_attak(h2)
+
+def comp_choose_leader():
+    end_battle()
 
 def delete_title():
     title_label.place(x=-1000, y=0)
@@ -1126,6 +1211,10 @@ def end_battle():
             if u.target == battle_place:
                 u.place = battle_place
         battle_place.update_owner(all_houses, all_unites)
+        for c in all_commands:
+            if c.place == battle_place:
+                c.place ='niht'
+                c.show()
     else: #if defence player win battle
         local_all_unites = []
         att_unites = []
@@ -1151,6 +1240,10 @@ def end_battle():
         c.clicked = 0
     for u in all_unites:
         u.clicked = 0
+    if attak_player == player_status or defense_player == player_status:
+        for h in all_houses:
+            if (h.tron - 1) % 6 == player_status.tron % 6:
+                comp_doing_attak(h)
 
 def collect_money():
     global  money_label
@@ -1171,11 +1264,7 @@ def comp_collect_army():
     print('типа что-то делает')
 
 def test_button():
-    for t in all_territories:
-        if t.owner != 0:
-            print(t.place+' '+str(t.owner.name))
-        else:
-            print(t.place+' niht')
+    print(game_proc)
 
 root=Tk()
 root.geometry(str(SX()) + 'x' + str(SY()))
@@ -1207,6 +1296,7 @@ game_proc='menu'
 player_status='niht'
 
 h = 0
+all_territories = [] + import_cells()
 track_images = []
 all_unites = []
 all_commands = []
