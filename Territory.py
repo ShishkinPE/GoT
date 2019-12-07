@@ -116,7 +116,7 @@ east_summer_more = cell('east_summer_more', 0, 0, 0, [], 'water', 979, 2381, 975
 dorn_more = cell('dorn_more', 0, 0, 0, [], 'water', 902, 2026, 904, 2041)
 gubitelnie_vali = cell('gubitelnie_vali', 0, 0, 0, [], 'water', 1217, 1663, 1184, 1678)
 chernovod_zaliv = cell('chernovod_zaliv', 0, 0, 0, [], 'water', 1003, 1501, 968, 1527)
-walhalla = cell('walhalla', 0, 0, 0, 'nowher', [], -500, -500, -500, -500)
+walhalla = cell('walhalla', 0, 0, 0, [], 'nowhere', -500, -500, -500, -500)
 cherniy_zamok.sosed = [karhold, winterfall, drozhashee_more, ledoviy_zaliv]
 winterfall.sosed = [karhold, belaya_gavan, drozhashee_more, ledoviy_zaliv, winterfall_port, kamenniy_bereg, rov_keylin,
                     cherniy_zamok]

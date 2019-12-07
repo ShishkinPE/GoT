@@ -512,6 +512,8 @@ def create_command():
         all_commands.append(money_command_2)
 
 def create_leaders():
+    #sum power = 15
+    #sum k + s = 14
     leader=leaders(stark, 'Ruse', 2, 2, 0)
     all_leaders.append(leader)
     leader = leaders(stark, 'Katya', 0, 0, 2)
@@ -564,7 +566,7 @@ def create_leaders():
     all_leaders.append(leader)
     leader = leaders(barateon, 'barateon', 0, 0, 0)
     all_leaders.append(leader)
-    leader = leaders(barateon, 'stannis', 4, 3, 0)
+    leader = leaders(barateon, 'stannis', 4, 5, 0) #it is not a bug. 5 swords is OK
     all_leaders.append(leader)
     leader = leaders(barateon, 'ser', 3, 2, 1)
     all_leaders.append(leader)
@@ -844,72 +846,6 @@ def comp_plans():
                stars = 1
             if h.voron > 4:
                 stars = 0
-            for t in all_territories:
-                allow_put = 0
-                for u in all_unites:
-                    if u.owner == h and u.place == t:
-                        allow_put = 1
-                        local_unit = u
-                for c in all_commands:
-                    if c.place == t:
-                        allow_put = 0
-                for c in all_commands:
-                    if c.type == 'attak':
-                        for t2 in all_territories:
-                            if c.owner == h and allow_put == 1 and local_unit.can_attak(t2) and c.place == 'niht' and c.type == 'attak' and t2.castles > 0 and t2.comp_choose_return(all_houses, h) == 0  and t2.owner ==player_status and t.type_cell == 'earth':
-                                if stars > 0 and c.st == 1:
-                                    allow_put = 0
-                                    c.place = t
-                                    c.show()
-                                    t2.comp_choose_change(all_houses, h, 1)
-                                    stars = stars - 1
-                                    c.comp_target = t2
-                                elif c.st == 0:
-                                    allow_put = 0
-                                    c.place = t
-                                    c.show()
-                                    t2.comp_choose_change(all_houses, h, 1)
-                                    c.comp_target = t2
-                    for s in t.sosed:
-                        if c.owner == h and c.type == 'boost' and allow_put == 1 and c.place == 'niht' and s.owner == player_status and s.comp_choose_return(all_houses, h) == 1:
-                            if stars > 0 and c.st == 1:
-                                allow_put = 0
-                                c.place = t
-                                c.show()
-                                stars = stars - 1
-                            elif c.st == 0:
-                                allow_put = 0
-                                c.place = t
-                                c.show()
-                for c in all_commands:
-                    if c.type == 'fire':
-                        for s in t.sosed:
-                            if c.owner == h and c.type == 'fire' and allow_put == 1 and c.place == 'niht' and s.owner == player_status and t.castles == 0:
-                                if stars > 0 and c.st == 1:
-                                    allow_put = 0
-                                    c.place = t
-                                    c.show()
-                                    stars = stars - 1
-                                elif c.st == 0:
-                                    allow_put = 0
-                                    c.place = t
-                                    c.show()
-                for c in all_commands:
-                    if c.type == 'defense':
-                        for s in t.sosed:
-                            if c.owner == h and c.type == 'defense' and allow_put == 1 and c.place == 'niht' and s.owner == player_status:
-                                for u in all_unites:
-                                    if s.owner == u.owner:
-                                        if stars > 0 and c.st == 1:
-                                            allow_put = 0
-                                            c.place = t
-                                            c.show()
-                                            stars = stars - 1
-                                        elif c.st == 0:
-                                            allow_put = 0
-                                            c.place = t
-                                            c.show()
-
             for t in all_territories:
                 allow_put = 0
                 for u in all_unites:
