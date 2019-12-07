@@ -514,7 +514,7 @@ def create_command():
 def create_leaders():
     #sum power = 15
     #sum k + s = 14
-    leader=leaders(stark, 'Ruse', 2, 2, 0)
+    leader=leaders(stark, 'Ruse', 2, 1, 0)
     all_leaders.append(leader)
     leader = leaders(stark, 'Katya', 0, 0, 2)
     all_leaders.append(leader)
@@ -548,7 +548,7 @@ def create_leaders():
     all_leaders.append(leader)
     leader = leaders(martell, 'martell', 0, 0, 0)
     all_leaders.append(leader)
-    leader = leaders(martell, 'areo', 3, 0, 1)
+    leader = leaders(martell, 'areo', 3, 1, 1) #FIXME : gif image not balanced need add sword to image
     all_leaders.append(leader)
     leader = leaders(martell, 'arianna', 3, 0, 2)
     all_leaders.append(leader)
@@ -561,8 +561,6 @@ def create_leaders():
     leader = leaders(martell, 'obara', 2, 1, 0)
     all_leaders.append(leader)
     leader = leaders(martell, 'oberin', 4, 2, 1)
-    all_leaders.append(leader)
-    leader = leaders(martell, 'martell', 0, 0, 0)
     all_leaders.append(leader)
     leader = leaders(barateon, 'barateon', 0, 0, 0)
     all_leaders.append(leader)
@@ -580,6 +578,50 @@ def create_leaders():
     all_leaders.append(leader)
     leader = leaders(barateon, 'pestryak', 1, 0, 1)
     all_leaders.append(leader)
+    leader = leaders(greydjoy, 'beylon', 4, 3, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'wictorian', 4, 3, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'euron', 4, 3, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'asha', 1, 2, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'dagmer', 1, 2, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'wethead', 1, 0, 1)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'teon', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(greydjoy, 'greydjoy', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'tirrel', 0, 0, 0)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'tarly', 4, 0, 2)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'meys', 3, 0, 2)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'ser2', 3, 2, 0)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'ser', 3, 3, 0)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'margery', 1, 0, 1)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'alester', 1, 0, 1)
+    all_leaders.append(leader)
+    leader = leaders(tirrel, 'koroleva', 0, 2, 1)
+    all_leaders.append(leader)
+    #check_balance()
+
+def check_balance():
+    for h in all_houses:
+        power = 0
+        s = 0
+        for l in all_leaders:
+            if l.owner == h:
+                power += l.power
+                s += l.swords + l.towers
+        print(h.name + ' have ' + str(s) + ' swords + towers and ' + str(power) + ' power')
+
 
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
