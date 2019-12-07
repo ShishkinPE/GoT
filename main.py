@@ -307,6 +307,7 @@ class unit:
         self.place = walhalla
         self.target = walhalla
         self.show()
+        self.show_battle(-10, -10)
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -331,6 +332,7 @@ class leaders:
         self.name = name
         self.power = power
         self.clicked = 0
+        self.usable = 1
         if self.owner.name == self.name:
             self.clicked = 1
         self.id = Label(root)
@@ -622,7 +624,6 @@ def check_balance():
                 s += l.swords + l.towers
         print(h.name + ' have ' + str(s) + ' swords + towers and ' + str(power) + ' power')
 
-
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
         return 'barateon'
@@ -787,30 +788,30 @@ def main_click(event):
         if event.widget == LeaderA and player_role == 'attak':
             z = 0
             for l in all_leaders:
-                if z == 1 and l.owner == player_status:
+                if z == 1 and l.owner == player_status and l.usable == 1:
                     l.clicked = 1
                     LeaderA.config(image = l.img)
                     z = -1
-                if l.owner == player_status and l.clicked == 1 and z == 0:
+                if l.owner == player_status and l.clicked == 1 and z == 0 and l.usable == 1:
                     z = 1
                     l.clicked = 0
             for l in all_leaders:
-                if z == 1 and l.owner == player_status:
+                if z == 1 and l.owner == player_status and l.usable == 1:
                     l.clicked = 1
                     LeaderA.config(image = l.img)
                     z = -1
         if event.widget == LeaderD and player_role == 'defense':
             z = 0
             for l in all_leaders:
-                if z == 1 and l.owner == player_status:
+                if z == 1 and l.owner == player_status and l.usable == 1:
                     l.clicked = 1
                     LeaderD.config(image=l.img)
                     z = -1
-                if l.owner == player_status and l.clicked == 1 and z == 0:
+                if l.owner == player_status and l.clicked == 1 and z == 0 and l.usable == 1:
                     z = 1
                     l.clicked = 0
             for l in all_leaders:
-                if z == 1 and l.owner == player_status:
+                if z == 1 and l.owner == player_status and l.usable == 1:
                     l.clicked = 1
                     LeaderD.config(image=l.img)
                     z = -1
@@ -1177,14 +1178,37 @@ def end_battle():
     for l in all_leaders:
         if l.clicked == 1 and l.owner == attak_player:
             power_attak = power_attak + l.power
+            l.usable = 0
             attak_swords = l.swords
             attak_towers = l.towers
         if l.clicked == 1 and l.owner == defense_player:
             power_defense = power_defense + l.power
+            l.usable = 0
             defence_swords = l.swords
             defence_towers = l.towers
     power_attak += (6 - attak_player.sword) * 0.1
     power_defense += (6 - defense_player.sword) * 0.1
+
+    #next part of cod to spin leaders ceards
+    att_l_unusable = 0
+    def_l_unusable = 0
+    for l in all_leaders:
+        if l.owner == attak_player and l.usable == 0:
+            att_l_unusable += 1
+        if l.owner == defense_player and l.usable == 0:
+            def_l_unusable += 1
+    if att_l_unusable >= 6:
+        for l in all_leaders:
+            if l.owner == attak_player:
+                l.usable = 1
+    if def_l_unusable >= 6:
+        for l in all_leaders:
+            if l.owner == defense_player:
+                l.usable = 1
+    for l in all_leaders:
+        l.clicked = 0
+        if l.name == player_status.name:
+            l.clicked = 1
 
     battle_window.place(x = -2000, y = 0)
     LeaderD.place(x = -1000, y = 0)
@@ -1263,15 +1287,16 @@ def end_battle():
                 u.target = u.place
                 u.health = 0
     for u in all_unites:
+        u.place = u.target
         u.show()
+        u.clicked = 0
     for c in all_commands:
         c.clicked = 0
-    for u in all_unites:
-        u.clicked = 0
     if attak_player == player_status or defense_player == player_status:
         for h in all_houses:
             if (h.tron - 1) % 6 == player_status.tron % 6:
                 comp_doing_attak(h)
+
 
 def collect_money():
     global  money_label
