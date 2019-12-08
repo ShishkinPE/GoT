@@ -866,8 +866,10 @@ def finish_button_click():
                 if (h.tron - 1) % 6 == player_status.tron % 6:
                     comp_doing_attak(h)
     elif game_proc == 'battle':
-        game_proc = 'phase_doing_attak'
-        comp_choose_leader()
+        for l in all_leaders:
+            if l.clicked == 1 and l.owner == player_status and l.name != player_status.name:
+                game_proc = 'phase_doing_attak'
+                comp_choose_leader()
     elif game_proc == 'phase_doing_money':
         collect_money()
         game_proc = 'phase_vesteros'
@@ -1084,6 +1086,7 @@ def battle_graphic():
     Finish_button.config(text = 'Битва!')
     battle_window.place(x=SX()//10, y=SY()//10)
     for u in all_unites:
+        u.show_battle(-1,-1)
         if u.target == battle_place and u.place != battle_place:
             attak_player = u.owner
         if u.place == battle_place:
@@ -1296,7 +1299,6 @@ def end_battle():
         for h in all_houses:
             if (h.tron - 1) % 6 == player_status.tron % 6:
                 comp_doing_attak(h)
-
 
 def collect_money():
     global  money_label
