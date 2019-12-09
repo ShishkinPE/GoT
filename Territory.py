@@ -12,6 +12,8 @@ class cell:
         self.army_x = army_x
         self.army_y = army_y
         self.owner = 0
+        self.command_have = 0
+        self.under_attak = 0
         self.comp_chooseG = 0
         self.comp_chooseT = 0
         self.comp_chooseL = 0

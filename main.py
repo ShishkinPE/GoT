@@ -877,6 +877,201 @@ def finish_button_click():
 
 def comp_plans():
     global all_commands, all_territories, all_houses, all_unites, player_status
+    for t in all_territories:
+        z_enemy = 0
+        for u in all_unites:
+            if u.place != 'niht' and u.owner == player_status:
+                if u.can_attak(t):
+                    z_enemy = z_enemy + 1
+        t.under_attak = z_enemy
+    for h in all_houses:
+        for t in all_territories:
+            t.comp_choose_change(all_houses, h, 0)
+            t.command_have = 0
+        for c in all_commands:
+            c.comp_target = 0
+        if h != player_status:
+            if h.voron == 1 or h.voron == 2:
+                stars = 3
+            if h.voron == 3:
+                stars = 2
+            if h.voron == 4:
+               stars = 1
+            if h.voron > 4:
+                stars = 0
+            for c in all_commands:
+                if c.owner == h and c.type == 'attak':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if t.type_cell == 'earth' and allow_put == 1:
+                            for t2 in all_territories:
+                                if t2.owner == player_status and local_units[0].can_attak(t2) and allow_put == 1 and t2.castles > 0 and t2.comp_choose_return(all_houses, h) == 0:
+                                    if stars > 0 and c.st == 1:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t2.comp_choose_change(all_houses, h, 1)
+                                        stars = stars - 1
+                                        c.comp_target = t2
+                                        t.command_have = 1
+                                    elif c.st == 0:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t2.comp_choose_change(all_houses, h, 1)
+                                        c.comp_target = t2
+                                        t.command_have = 1
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if t.type_cell == 'earth' and allow_put == 1:
+                            for t2 in all_territories:
+                                if t2.owner != h and local_units[0].can_attak(t2) and allow_put == 1 and t2.castles > 0 and t2.comp_choose_return(all_houses, h) == 0:
+                                    if stars > 0 and c.st == 1:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t2.comp_choose_change(all_houses, h, 1)
+                                        stars = stars - 1
+                                        c.comp_target = t2
+                                        t.command_have = 1
+                                    elif c.st == 0:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t2.comp_choose_change(all_houses, h, 1)
+                                        c.comp_target = t2
+                                        t.command_have = 1
+                        elif t.type_cell != 'earth' and allow_put == 1:
+                            for s in t.sosed:
+                                if s.type_cell != 'earth' and allow_put == 1:
+                                    z_enemy = 0
+                                    z_owner = 0
+                                    for u in all_unites:
+                                        if u.owner != h and u.place == s:
+                                            z_enemy = z_enemy + 1
+                                        if u.owner == h and u.place == t:
+                                            z_owner = z_owner + 1
+                                    if z_enemy < z_owner and z_owner > 1 and allow_put == 1:
+                                        if stars > 0 and c.st == 1:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+                                            stars = stars - 1
+                                            t.command_have = 1
+                                        elif c.st == 0:
+                                            allow_put = 0
+                                            c.place = t
+                                            c.show()
+                                            t.command_have = 1
+                if c.owner == h and c.type == 'fire':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if allow_put == 1:
+                            for s in t.sosed:
+                                z_enemy = 0
+                                for u in all_unites:
+                                    if u.place == s and u.owner != h:
+                                        z_enemy = z_enemy + 1
+                                if allow_put == 1 and z_enemy > 0:
+                                    if stars > 0 and c.st == 1:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        stars = stars - 1
+                                        t.command_have = 1
+                                    elif c.st == 0:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t.command_have = 1
+                if c.owner == h and c.type == 'boost':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if allow_put == 1:
+                            for s in t.sosed:
+                                if allow_put == 1 and s.under_attak > 0 and s.owner == h:
+                                    if stars > 0 and c.st == 1:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        stars = stars - 1
+                                        t.command_have = 1
+                                    elif c.st == 0:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t.command_have = 1
+                if c.owner == h and c.type == 'defense':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if allow_put == 1:
+                            if allow_put == 1 and t.under_attak > 0:
+                                if stars > 0 and c.st == 1:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    stars = stars - 1
+                                    t.command_have = 1
+                                elif c.st == 0:
+                                    allow_put = 0
+                                    c.place = t
+                                    c.show()
+                                    t.command_have = 1
+                if c.owner == h and c.type == 'money_command' and c.st == 1 and stars > 0:
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if t.type_cell == 'earth' and allow_put == 1 and t.castles > 0:
+                            allow_put = 0
+                            c.place = t
+                            c.show()
+                            stars = stars - 1
+                            t.command_have = 1
+                if c.owner == h and c.type == 'money_command':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if t.type_cell == 'earth' and allow_put == 1 and c.st == 0:
+                            allow_put = 0
+                            c.place = t
+                            c.show()
+                            t.command_have = 1
+
+def comp_plans_old():
+    global all_commands, all_territories, all_houses, all_unites, player_status
     for h in all_houses:
         for t in all_territories:
             t.comp_choose_change(all_houses, h, 0)
@@ -1010,7 +1205,7 @@ def comp_doing_fire(fire_owner):
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_fire(h2)
 
-def comp_doing_attak(attak_owner):
+def comp_doing_attak_old(attak_owner):
     global number_doing
     number_doing = number_doing -1
     z2 = 1
@@ -1066,6 +1261,95 @@ def comp_doing_attak(attak_owner):
 
     for u in all_unites:
         u.clicked = 0
+
+    for h in all_houses:
+        if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
+            comp_doing_attak(h)
+        elif game_proc != 'phase_doing_attak' and (h.tron - 1) % 6 == attak_owner.tron % 6 and h == player_status:
+            for h2 in all_houses:
+                if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
+                    comp_doing_attak(h2)
+
+def comp_doing_attak(attak_owner):
+    global number_doing
+    number_doing = number_doing -1
+    z2 = 1
+    for c in all_commands:
+        if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell == 'earth':
+            z = 0
+            local_units = []
+            for u in all_unites:
+                if u.place == c.place:
+                    local_units.append(u)
+                    u.clicked == 0
+                    z = 1
+            for t in all_territories:
+                if t.comp_choose_return(all_houses, attak_owner) == 1 and z == 1:
+                    afraid = 0;
+                    for u in all_unites:
+                        if u.place == t and u.owner != attak_owner:
+                            afraid = 1
+                            enemy = u.owner
+                    if afraid == 1:
+                        if local_units[0].can_attak(t) and c.place != 'niht':
+                            for u in local_units:
+                                u.target = t
+                                u.clicked = 1
+                                c.clicked = 1
+                                c.place = 'niht'
+                                t.comp_choose_change(all_houses, c.owner, 0)
+                                global battle_place
+                                battle_place = t
+                                for t in all_territories:
+                                    t.update_owner(all_houses, all_unites)
+                                if enemy == player_status:
+                                    global game_proc
+                                    game_proc = 'battle'
+                                    battle_graphic()
+                                else:
+                                    end_battle()
+                    else:
+                        if local_units[0].place == c.place and u.can_attak(t):
+                            local_units[0].place = t
+                            local_units[0].target = t
+                            local_units[0].clicked = 1
+                            t.comp_choose_change(all_houses, c.owner, 0)
+                            t.update_owner(all_houses, all_unites)
+                            c.show()
+                        for u in local_units:
+                            for t2 in all_territories:
+                                if u.can_attak(t2) and u.place == c.place and t2.owner != attak_owner:
+                                    is_anybody_at_home = False
+                                    for u2 in all_unites:
+                                        if u2.place == t2:
+                                            is_anybody_at_home = 1
+                                    if is_anybody_at_home == 0:
+                                        u.place = t2
+                                        u.target = t2
+                                        u.show()
+                                        t2.update_owner(all_houses, all_unites)
+                        for u in local_units:
+                            if u.place == c.place and u.can_attak(t):
+                                u.place = t
+                                u.target = t
+                                u.clicked = 1
+                                t.comp_choose_change(all_houses, c.owner, 0)
+                                t.update_owner(all_houses, all_unites)
+                                c.show()
+                        c.place = 'niht'
+                        c.show()
+        if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell != 'earth':
+            z = 0
+            local_units = []
+            for u in all_unites:
+                if u.place == c.place:
+                    local_units.append(u)
+                    u.clicked == 0
+                    z = z + 1
+
+    for u in all_unites:
+        u.clicked = 0
+        u.show()
 
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
@@ -1320,6 +1604,7 @@ def comp_collect_army():
 
 def test_button():
     print(game_proc)
+
 
 root=Tk()
 root.geometry(str(SX()) + 'x' + str(SY()))
