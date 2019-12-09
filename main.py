@@ -5,6 +5,7 @@ from time import *
 from consts import *
 from Territory import *
 
+BATTLE_TIME = 1
 
 
 class command:
@@ -869,7 +870,7 @@ def finish_button_click():
         for l in all_leaders:
             if l.clicked == 1 and l.owner == player_status and l.name != player_status.name:
                 game_proc = 'phase_doing_attak'
-                comp_choose_leader()
+                end_battle()
     elif game_proc == 'phase_doing_money':
         collect_money()
         game_proc = 'phase_vesteros'
@@ -1286,12 +1287,14 @@ def comp_doing_attak(attak_owner):
             for t in all_territories:
                 if t.comp_choose_return(all_houses, attak_owner) == 1 and z == 1:
                     afraid = 0;
+                    z_enemy = 0
                     for u in all_unites:
                         if u.place == t and u.owner != attak_owner:
                             afraid = 1
                             enemy = u.owner
+                            z_enemy = z_enemy + 1
                     if afraid == 1:
-                        if local_units[0].can_attak(t) and c.place != 'niht':
+                        if local_units[0].can_attak(t) and c.place != 'niht' and len(local_units) > z_enemy:
                             for u in local_units:
                                 u.target = t
                                 u.clicked = 1
@@ -1300,16 +1303,16 @@ def comp_doing_attak(attak_owner):
                                 t.comp_choose_change(all_houses, c.owner, 0)
                                 global battle_place
                                 battle_place = t
-                                for t in all_territories:
-                                    t.update_owner(all_houses, all_unites)
-                                if enemy == player_status:
-                                    global game_proc
-                                    game_proc = 'battle'
-                                    battle_graphic()
-                                else:
-                                    end_battle()
-                    else:
-                        if local_units[0].place == c.place and u.can_attak(t):
+                            if enemy == player_status:
+                                global game_proc
+                                game_proc = 'battle'
+                                battle_graphic()
+                            else:
+                                end_battle()
+                        elif z_enemy > len(local_units) - 1:
+                            afraid = 2
+                    if afraid != 1:
+                        if local_units[0].place == c.place and u.can_attak(t) and afraid == 0:
                             local_units[0].place = t
                             local_units[0].target = t
                             local_units[0].clicked = 1
@@ -1319,7 +1322,7 @@ def comp_doing_attak(attak_owner):
                         for u in local_units:
                             for t2 in all_territories:
                                 if u.can_attak(t2) and u.place == c.place and t2.owner != attak_owner:
-                                    is_anybody_at_home = False
+                                    is_anybody_at_home = 0
                                     for u2 in all_unites:
                                         if u2.place == t2:
                                             is_anybody_at_home = 1
@@ -1350,7 +1353,6 @@ def comp_doing_attak(attak_owner):
     for u in all_unites:
         u.clicked = 0
         u.show()
-
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_attak(h)
@@ -1359,8 +1361,20 @@ def comp_doing_attak(attak_owner):
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_attak(h2)
 
-def comp_choose_leader():
-    end_battle()
+def comp_choose_leader(owner, status):
+    global LeaderD, LeaderA
+    l_can_use=[]
+    for l in all_leaders:
+        if l.owner == owner and l.usable == 1:
+            l_can_use.append(l)
+    l_use = choice(l_can_use)
+    for l in all_leaders:
+        if l == l_use:
+            l.clicked = 1
+            if status == 'attak':
+                LeaderA.config(image = l.img)
+            if status == 'defense':
+                LeaderD.config(image = l.img)
 
 def delete_title():
     title_label.place(x=-1000, y=0)
@@ -1443,6 +1457,12 @@ def end_battle():
             attak_player = u.owner
         if u.place == battle_place:
             defense_player = u.owner
+    if defense_player != player_status:
+        comp_choose_leader(defense_player, 'defense')
+        print ('k')
+    if attak_player != player_status:
+        comp_choose_leader(attak_player, 'attak')
+        print('k')
     for c in all_commands:
         if c.clicked == 1 and c.type == 'attak' and c.owner == attak_player:
             power_attak += c.power
@@ -1496,13 +1516,13 @@ def end_battle():
         l.clicked = 0
         if l.name == player_status.name:
             l.clicked = 1
+    if defense_player == player_status or attak_player == player_status:
+        root.update()
+        root.after(BATTLE_TIME*1000, unshow_battle)
+        sleep(BATTLE_TIME)
 
-    battle_window.place(x = -2000, y = 0)
-    LeaderD.place(x = -1000, y = 0)
-    LeaderA.place(x = -1000, y = 0)
-    Finish_button.config(text = 'В поход!')
     for c in all_commands:
-        if c.clicked == 1:
+        if c.clicked == 1 and (defense_player == player_status or attak_player == player_status):
             c.clicked = 0
             c.place = 'niht'
             c.show()
@@ -1583,6 +1603,16 @@ def end_battle():
         for h in all_houses:
             if (h.tron - 1) % 6 == player_status.tron % 6:
                 comp_doing_attak(h)
+
+def unshow_battle():
+    global  battle_window, LeaderD, LeaderA, Finish_button
+    battle_window.place(x = -2000, y = 0)
+    LeaderD.place(x = -1000, y = 0)
+    LeaderA.place(x = -1000, y = 0)
+    Finish_button.config(text = 'В поход!')
+
+def sl5():
+    sleep(5)
 
 def collect_money():
     global  money_label
