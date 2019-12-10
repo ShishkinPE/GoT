@@ -325,6 +325,47 @@ class house:
     def __eq__(self, other):
         return self is other
 
+    def check_food(self):
+        global all_territories
+        food = self.food_array()
+        for t in all_territories:
+            t.update_owner(all_houses, all_unites)
+            if t.owner == self:
+                u_num = 0
+                for u in all_unites:
+                    if u.target == t and u.owner == self:
+                        u_num += 1
+                r = 0
+                if u_num > 1:
+                    while r == 0:
+                        r = 0
+                        for f in food:
+                            if u_num == f:
+                                r = 1
+                        if r == 1:
+                            food.remove(u_num)
+                        else:
+                            u_num += 1
+                        if u_num > 7:
+                            return False
+        return True
+
+    def food_array(self):
+        if self.food == 0:
+            return [2,2]
+        if self.food == 1:
+            return [3,2]
+        if self.food == 2:
+            return [3,2,2]
+        if self.food == 3:
+            return [3,2,2,2]
+        if self.food == 4:
+            return [3,3,2,2]
+        if self.food == 5:
+            return [4,3,2,2]
+        if self.food >= 6:
+            return [4,3,2,2,2]
+
 class leaders:
     def __init__(self, owner, name, power, swords, towers):
         self.owner = owner
@@ -363,16 +404,12 @@ def menu_1(x,y):
 
 def menu_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
-        print('start')
         return 'choise'
     elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+butShag) and y < SY() * (butY2 + butShag):
-        print('загрузить')
         return 'load'
     elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+2*butShag) and y < SY() * (butY2 + 2*butShag):
-        print('help')
         return 'help'
     elif x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1+3*butShag) and y < SY() * (butY2 + 3*butShag):
-        print('Выход')
         exit()
     else:
         return 'menu'
@@ -423,9 +460,6 @@ def create_unites():
     global all_unites
     """create start unites u == unit s == stark r == greydjoy"""
     us1 = unit('knight', winterfall, stark, 1)
-    ustest = unit('footman', chernovodnaya, stark, 2)
-    ustest2 = unit('footman', chernovodnaya, stark, 2)
-    ustest3 = unit('footman', chernovodnaya, stark, 2)
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
@@ -453,7 +487,7 @@ def create_unites():
     ul4 = unit('knight', pidortown, lannister,1)
     ul5 = unit('ship', pidor_port, lannister,1)
 
-    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5, ustest, ustest2, ustest3]
+    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
 
     for u in all_unites:
         u.show()
@@ -818,7 +852,7 @@ def main_click(event):
                     z = -1
 
 def finish_button_click():
-    global game_proc, all_unites, all_houses, all_commands
+    global game_proc, all_unites, all_houses, all_commands, player_status
     if game_proc == 'phase_plans':
         comp_plans()
         phase_doing()
@@ -830,6 +864,11 @@ def finish_button_click():
         phase_doing()
     elif game_proc == 'phase_doing_attak':
         z = 0
+        # if z = some unit target -> battle on place = target
+        # if z = 0 -> simple attack
+        # if z = 1 -> uncorrect attack <=> no effect of click
+        if not player_status.check_food():
+            z = 1
         for u1 in all_unites:
             for u2 in all_unites:
                 if u1.target == u2.place and u1.owner != u2.owner:
@@ -1090,7 +1129,6 @@ def comp_doing_fire(fire_owner):
                         if c2.place != 'niht':
                             if c2.place == s and (c2.type == 'fire' or c2.type == 'boost' or c2.type == 'money_command' or (c2.type == 'defense' and c.st == 1)):
                                 c2.place = 'niht'
-                                print(c2.owner.name +'уничтоже '+c.owner.name+'в провинции'+c.place.place)
                                 c.place = 'niht'
                                 c.show()
                                 c2.show()
@@ -1103,16 +1141,13 @@ def comp_doing_fire(fire_owner):
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_fire(h2)
 
-
 def comp_doing_attak(attak_owner):
     global number_doing
     number_doing = number_doing -1
     z2 = 1
-    print(attak_owner.name)
     for c in all_commands:
         if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell == 'earth':
             z2 = 0
-            print(c.place.place)
             z = 0
             local_units = []
             for u in all_unites:
@@ -1135,7 +1170,6 @@ def comp_doing_attak(attak_owner):
                                 u.target = t
                                 u.clicked = 1
                                 c.clicked = 1
-                                print(u.unit_type+' принадлежащий '+u.owner.name+' отправлен в атаку на '+t.place)
                                 sleep(0.5)
                                 c.place = 'niht'
                                 t.comp_choose_change(all_houses, c.owner, 0)
@@ -1154,7 +1188,6 @@ def comp_doing_attak(attak_owner):
                             local_units[0].place = t
                             local_units[0].target = t
                             local_units[0].clicked = 1
-                            print(u.unit_type + ' принадлежащий ' + local_units[0].owner.name + ' базово пошел в цель ' + t.place)
                             t.comp_choose_change(all_houses, c.owner, 0)
                             t.update_owner(all_houses, all_unites)
                             c.show()
@@ -1168,8 +1201,6 @@ def comp_doing_attak(attak_owner):
                                     if is_anybody_at_home == 0:
                                         u.place = t2
                                         u.target = t2
-                                        print(u.unit_type + ' принадлежащий ' + u.owner.name + ' разбрелся в ' + t2.place)
-                                        print(afraid)
                                         u.show()
                                         t2.update_owner(all_houses, all_unites)
                         for u in local_units:
@@ -1177,7 +1208,6 @@ def comp_doing_attak(attak_owner):
                                 u.place = t
                                 u.target = t
                                 u.clicked = 1
-                                print(u.unit_type + ' принадлежащий ' + u.owner.name + ' от безисходности пошел в цель ' + t.place)
                                 t.comp_choose_change(all_houses, c.owner, 0)
                                 t.update_owner(all_houses, all_unites)
                                 c.show()
