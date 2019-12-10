@@ -678,7 +678,7 @@ def choise_house_click(x, y):
         return 'choise'
 
 def start_game():
-    global game_proc, player_status, all_unites, images, money_label
+    global game_proc, player_status, all_unites, images, money_label, food_label
     create_unites()
     if game_proc=='barateon':
         barateon.status='player'
@@ -724,8 +724,13 @@ def start_game():
         player_status=stark
         phase_plans()
 
+    food_text = ''
+    for f in player_status.food_array():
+        food_text += ' ' + str(f)
+    food_label = Label(text = 'Ваше снабжение: ' + food_text)
+    food_label.place(x=SX(), y = SY(), anchor = 'se')
     money_label = Label(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
-    money_label.place(x=0, y=(SY() - 19))
+    money_label.place(x=0, y=SY(), anchor = 'sw')
 
 def phase_plans():
     global game_proc, all_commands, player_status
@@ -773,13 +778,27 @@ def phase_doing():
         Finish_button.config(text='Завершить сбор власти')
 
 def phase_vesteros():
-    #FIXME here add phases of vesteros
+    global food_label
     for c in all_commands:
         c.place = 'niht'
         c.clicked = 0
     for u in all_unites:
         u.health = 1
         u.clicked = 0
+    phase = choice(['food_phase'])
+    if phase == 'exit':
+        exit()
+    if phase == 'food_phase':
+        for h in all_houses:
+            h.food = 0
+            for t in all_territories:
+                t.update_owner(all_houses, all_unites)
+                if t.owner == h:
+                    h.food += t.food
+        food_text = ''
+        for f in player_status.food_array():
+            food_text += ' ' + str(f)
+        food_label.config(text = 'Ваше снабжение: ' + food_text)
     phase_plans()
 
 def motion(event):
