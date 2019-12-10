@@ -326,6 +326,7 @@ class house:
         return self is other
 
     def check_food(self):
+        """returns may be or not situation with current targets of this house. Use unites targets"""
         global all_territories
         food = self.food_array()
         for t in all_territories:
@@ -336,6 +337,7 @@ class house:
                     if u.target == t and u.owner == self:
                         u_num += 1
                 r = 0
+                # r - indicator of existance element of food equal to u_number or bigger
                 if u_num > 1:
                     while r == 0:
                         r = 0
