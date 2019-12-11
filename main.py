@@ -1035,6 +1035,38 @@ def comp_plans():
                                             c.show()
                                             t.command_have = 1
             for c in all_commands:
+                if c.owner == h and c.type == 'attak':
+                    for t in all_territories:
+                        allow_put = 0
+                        local_units = []
+                        for u in all_unites:
+                            if u.place == t and u.owner == h and c.place == 'niht' and t.command_have == 0:
+                                allow_put = 1
+                                local_units.append(u)
+                        if t.type_cell == 'earth' and allow_put == 1:
+                            near_enemy = 0
+                            for s in t.sosed:
+                                for u in all_unites:
+                                    if u.owner != h and u.place == s and s.type_cell == 'earth':
+                                        near_enemy = 1
+                            if near_enemy == 0:
+                                z_owner = 0
+                                for u in all_unites:
+                                    if u.place == t:
+                                        z_owner = z_owner + 1
+                                if z_owner > 1:
+                                    if stars > 0 and c.st == 1:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        stars = stars - 1
+                                        t.command_have = 1
+                                    elif c.st == 0:
+                                        allow_put = 0
+                                        c.place = t
+                                        c.show()
+                                        t.command_have = 1
+            for c in all_commands:
                 if c.owner == h and c.type == 'fire':
                     for t in all_territories:
                         allow_put = 0
@@ -1163,7 +1195,7 @@ def comp_doing_fire(fire_owner):
                     comp_doing_fire(h2)
 
 def comp_doing_attak(attak_owner):
-    global number_doing
+    global number_doing, game_proc, battle_place
     number_doing = number_doing -1
     z2 = 1
     for c in all_commands:
@@ -1191,7 +1223,6 @@ def comp_doing_attak(attak_owner):
                                 u.target = t
                                 u.clicked = 1
                                 c.clicked = 1
-                                sleep(0.5)
                                 c.place = 'niht'
                                 t.comp_choose_change(all_houses, c.owner, 0)
                                 global battle_place
@@ -1234,6 +1265,28 @@ def comp_doing_attak(attak_owner):
                                 c.show()
                         c.place = 'niht'
                         c.show()
+            for t in all_territories:
+                if z == 1 and c.place != 'niht':
+                    if local_units[0].can_attak(t):
+                        for s in t.sosed:
+                            if s.owner != attak_owner and s.castles > 0:
+                                noempty = 0
+                                for u in all_unites:
+                                    if u.place == t and u.owner != attak_owner:
+                                        noempty = 1
+                                if noempty == 0:
+                                    target = s
+                        for u in local_units:
+                            u.place = t
+                            u.target = t
+                            u.clicked = 1
+                            t.update_owner(all_houses, all_unites)
+                            c.show()
+                        local_units[0].place = c.place
+                        local_units[0].target = c.place
+                        c.place = 'niht'
+                        c.show()
+
         if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell != 'earth':
             z = 0
             local_units = []
@@ -1242,6 +1295,43 @@ def comp_doing_attak(attak_owner):
                     local_units.append(u)
                     u.clicked == 0
                     z = z + 1
+            if len(local_units) > 1:
+                target = 0
+                for t in all_territories:
+                    if local_units[0].can_attak(t) and target == 0:
+                        for u in all_unites:
+                            if u.place == t:
+                                target = -1
+                        if target == 0:
+                            target = t
+                        elif target == -1:
+                            target = 0
+                z_enemy = 0
+                for u in all_unites:
+                    if u.place == target and u.owner != attak_owner:
+                        z_enemy = z_enemy + 1
+                        enemy = u.owner
+                if z_enemy == 0 and target != 0:
+                    for u in local_units:
+                        u.place = target
+                        u.target = target
+                    local_units[0].place = c.place
+                    local_units[0].target = c.place
+                    c.place = 'niht'
+                    c.show()
+                elif len(local_units) > z_enemy - 0.5 and target != 0:
+                    for u in local_units:
+                        u.target = target
+                        battle_place = target
+                        c.clicked = 1
+                        c.place = 'niht'
+                        c.show()
+                        if enemy == player_status:
+                            game_proc = 'battle'
+                            battle_graphic()
+                        else:
+                            end_battle()
+
 
     for u in all_unites:
         u.clicked = 0
@@ -1582,7 +1672,6 @@ image_map = Label(canv, image = img)
 
 game_proc='menu'
 player_status='niht'
-
 h = 0
 all_territories = [] + import_cells()
 track_images = []
