@@ -1467,8 +1467,22 @@ def end_battle():
         for c in all_commands:
             if c.place == t and c.type == 'boost':
                 if c.owner == attak_player:
+                    for u in all_unites:
+                        if u.place == c.place and u.unit_type == 'trambeling' and t.castles > 0:
+                            power_attak += u.power
+                        elif u.place == c.place and u.unit_type != 'ship' and battle_place.type_cell == 'earth':
+                            power_attak += u.power
+                        elif u.place == c.place and u.unit_type == 'ship':
+                            power_attak += u.power
                     power_attak += c.power
                 if c.owner == defense_player:
+                    for u in all_unites:
+                        if u.place == c.place and u.unit_type == 'trambeling' and t.castles > 0:
+                            power_defense += u.power * 0
+                        elif u.place == c.place and u.unit_type != 'ship' and battle_place.type_cell == 'earth':
+                            power_defense += u.power
+                        elif u.place == c.place and u.unit_type == 'ship':
+                            power_defense += u.power
                     power_defense += c.power
                 for u in all_unites:
                     if u.owner == attak_player and u.unit_type != 'trembling':
@@ -1687,7 +1701,7 @@ image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
 
 Finish_button=Button(root, text = 'дима мокеев петух', command = finish_button_click)
-Test_button=Button(root, text = 'дима мокеев петух', command = test_button)
+Test_button=Button(root, text = 'Манул', command = test_button)
 Test_button.place(x=200, y=50)
 title_label=Label(root, text='дима мокеев петух')
 path = "media/test.gif"
