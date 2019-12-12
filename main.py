@@ -778,17 +778,17 @@ def phase_doing():
         Finish_button.config(text='Завершить сбор власти')
 
 def phase_vesteros():
-    global food_label
+    global food_label, game_proc
     for c in all_commands:
         c.place = 'niht'
         c.clicked = 0
     for u in all_unites:
         u.health = 1
         u.clicked = 0
-    phase = choice(['food_phase'])
+    phase = choice(['food_phase', 'collect_army'])
     if phase == 'exit':
         exit()
-    if phase == 'food_phase':
+    elif phase == 'food_phase':
         for h in all_houses:
             h.food = 0
             for t in all_territories:
@@ -799,7 +799,18 @@ def phase_vesteros():
         for f in player_status.food_array():
             food_text += ' ' + str(f)
         food_label.config(text = 'Ваше снабжение: ' + food_text)
-    phase_plans()
+        phase_plans()
+    elif phase =='collect_army':
+        u = 1
+        while u < 7:
+            for h in all_houses:
+                if h.tron == u and h != player_status:
+                    comp_collect_army(h)
+                if h.tron == u and h == player_status:
+                    collect_army()
+                    game_proc = 'collect_army'
+                    u = 7
+            u = u + 1
 
 def motion(event):
     global h, game_proc, all_commands
@@ -935,6 +946,15 @@ def finish_button_click():
         collect_money()
         game_proc = 'phase_vesteros'
         phase_vesteros()
+    elif game_proc == 'collect_army':
+        u = player_status.tron
+        while u < 7:
+            for h in all_houses:
+                if h.tron == u and h != player_status:
+                    comp_collect_army(h)
+            u = u + 1
+        phase_plans()
+
 
 def comp_plans():
     global all_commands, all_territories, all_houses, all_unites, player_status
@@ -1225,11 +1245,13 @@ def comp_doing_attak(attak_owner):
                                 c.clicked = 1
                                 c.place = 'niht'
                                 t.comp_choose_change(all_houses, c.owner, 0)
+                                print(u.owner.name + u.unit_type + u.place.place+ 'воюю')
                                 global battle_place
                                 battle_place = t
                             if enemy == player_status:
                                 global game_proc
                                 game_proc = 'battle'
+                                print('защищайся подлый трус')
                                 battle_graphic()
                             else:
                                 end_battle()
@@ -1240,6 +1262,7 @@ def comp_doing_attak(attak_owner):
                             local_units[0].place = t
                             local_units[0].target = t
                             local_units[0].clicked = 1
+                            print(local_units[0].owner.name + local_units[0].unit_type + local_units[0].place.place + 'пришел по необходимости')
                             t.comp_choose_change(all_houses, c.owner, 0)
                             t.update_owner(all_houses, all_unites)
                             c.show()
@@ -1254,12 +1277,14 @@ def comp_doing_attak(attak_owner):
                                         u.place = t2
                                         u.target = t2
                                         u.show()
+                                        print(u.owner.name + u.unit_type + u.place.place + 'разбрелся')
                                         t2.update_owner(all_houses, all_unites)
                         for u in local_units:
                             if u.place == c.place and u.can_attak(t) and afraid == 0:
                                 u.place = t
                                 u.target = t
                                 u.clicked = 1
+                                print(u.owner.name + u.unit_type + u.place.place + 'пришел от безисходности')
                                 t.comp_choose_change(all_houses, c.owner, 0)
                                 t.update_owner(all_houses, all_unites)
                                 c.show()
@@ -1268,6 +1293,7 @@ def comp_doing_attak(attak_owner):
             for t in all_territories:
                 if z == 1 and c.place != 'niht':
                     if local_units[0].can_attak(t):
+                        target = c.place
                         for s in t.sosed:
                             if s.owner != attak_owner and s.castles > 0:
                                 noempty = 0
@@ -1280,6 +1306,7 @@ def comp_doing_attak(attak_owner):
                             u.place = t
                             u.target = t
                             u.clicked = 1
+                            print(u.owner.name + u.unit_type + u.place.place + 'я в безопасности')
                             t.update_owner(all_houses, all_unites)
                             c.show()
                         local_units[0].place = c.place
@@ -1371,7 +1398,7 @@ def delete_title():
     title_label.place(x=-1000, y=0)
 
 def battle_graphic():
-    global battle_place, all_leaders, all_unites
+    global battle_place, all_leaders, all_unites, game_proc
     Finish_button.config(text = 'Битва!')
     battle_window.place(x=SX()//10, y=SY()//10)
     for u in all_unites:
@@ -1425,8 +1452,11 @@ def battle_graphic():
                         number_A += 1
                 def_help -= 1
                 att_help += 1
+    if game_proc == 'battle':
+        root.after(1000, battle_graphic)
 
 def end_battle():
+    global game_proc
     attak_swords = 0
     attak_towers = 0
     defence_swords = 0
@@ -1446,8 +1476,9 @@ def end_battle():
             power_defense = power_defense + u.power * u.health
         if u.target == battle_place and u.place != battle_place:
             attak_player = u.owner
-        if u.place == battle_place:
+        if u.place == battle_place:        #FIXME Need check if game_proc == battle that don't create defense and attak player with human olayer
             defense_player = u.owner
+    print(attak_player.name +' with ' +defense_player.name)
     if defense_player != player_status:
         if attak_player == player_status:
             comp_choose_leader(defense_player, 'defense', 'with_player')
@@ -1539,7 +1570,7 @@ def end_battle():
     for c in all_commands:
         if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
             z = 1
-    if z == 0:
+    if z == 0 and (defense_player == player_status or attak_player == player_status):
         game_proc = 'phase_doing_money'
         phase_doing()
     if power_attak > power_defense:
@@ -1636,10 +1667,12 @@ def collect_money():
         money_label.config(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
 
 def collect_army():
-    pass
+    global game_proc, Finish_button
+    Finish_button.config(text = 'Завершить сбор войск')
+    Finish_button.place(x=SX()*0.45, y=SY()*0.9)
 
-def comp_collect_army():
-    print('типа что-то делает')
+def comp_collect_army(collector):
+    print('типа что-то делает'+ collector.name)
 
 def test_button():
     for c in all_commands:
