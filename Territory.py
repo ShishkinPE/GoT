@@ -4,6 +4,7 @@ class cell:
         self.food = food
         self.money = money
         self.castles = castles
+        self.unit_points = 0
         self.sosed = sosed
         self.type_cell = type_cell
         self.x = x

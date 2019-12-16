@@ -465,8 +465,6 @@ def create_unites():
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
-    ustest1 = unit('ship', drozhashee_more, stark, 1)
-    ustest2 = unit('ship', drozhashee_more, stark, 1)
     ug1 = unit('knight', payk, greydjoy, 1)
     ug2 = unit('footman', payk, greydjoy, 2)
     ug3 = unit('footman', serovodye, greydjoy, 1)
@@ -491,7 +489,7 @@ def create_unites():
     ul4 = unit('knight', pidortown, lannister,1)
     ul5 = unit('ship', pidor_port, lannister,1)
 
-    all_unites = [us1, us2, us3, us4, ustest2, ustest1, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
+    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
 
     for u in all_unites:
         u.show()
@@ -787,7 +785,7 @@ def phase_vesteros():
     for u in all_unites:
         u.health = 1
         u.clicked = 0
-    phase = choice(['food_phase', 'collect_army'])
+    phase = choice([ 'collect_army'])
     if phase == 'exit':
         exit()
     elif phase == 'food_phase':
@@ -955,8 +953,9 @@ def finish_button_click():
                 if h.tron == u and h != player_status:
                     comp_collect_army(h)
             u = u + 1
+        for cl in collection_labels:
+            cl.place(x=-100, y=-100)
         phase_plans()
-
 
 def comp_plans():
     global all_commands, all_territories, all_houses, all_unites, player_status
@@ -1682,9 +1681,6 @@ def unshow_battle():
     LeaderD.place(x = -1000, y = 0)
     LeaderA.place(x = -1000, y = 0)
 
-def sl5():
-    sleep(5)
-
 def collect_money():
     global  money_label
     for c in all_commands:
@@ -1698,9 +1694,106 @@ def collect_money():
         money_label.config(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
 
 def collect_army():
-    global game_proc, Finish_button
+    global game_proc, Finish_button, images, collection_labels
     Finish_button.config(text = 'Завершить сбор войск')
+    collection_labels = []
+    for t in all_territories:
+        t.unit_points = t.castles
+        if t.owner == player_status and t.unit_points > 0:
+            i=0
+            for u_type in ['trembling', 'knight', 'footman']:
+                i += 1
+                path = "media/unitы/" + player_status.name + "-" + u_type + ".gif"
+                img = PhotoImage(file = path)
+                images.append(img)
+                unit_label = Label(image_map, image = img, bg = 'black')
+                unit_label.place(x=(t.army_x - 90) + 45 * i, y=t.army_y - 60)
+                collection_labels += [unit_label]
+                unit_label.bind('<Button-1>', collect_unit)
+            for ts in t.sosed:
+                if ts.type_cell == 'port':
+                    path = "media/unitы/" + player_status.name + "-" + "ship" + ".gif"
+                    img = PhotoImage(file=path)
+                    images.append(img)
+                    unit_label = Label(image_map, image=img, bg='black')
+                    unit_label.place(x=t.army_x + 90, y=t.army_y - 60)
+                    unit_label.bind('<Button-1>', collect_unit)
+                    collection_labels += [unit_label]
+
+
+
+
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
+
+def collect_unit(event):
+    global  all_unites, player_status, collection_labels
+    for t in all_territories:
+        # int(event.widget.place_info()['x']) - coordinate x of unit label where clicked
+        if t.army_x == int(event.widget.place_info()['x']) - 45 and t.unit_points > 0 and player_status.money > 0:
+            footman = unit('footman', t, player_status, 4)
+            all_unites += [footman]
+            footman.show()
+            if not player_status.check_food():
+                footman.die()
+            root.update()
+            t.unit_points -= 1
+            player_status.money -= 1
+            if t.unit_points <= 0:
+                for cl in collection_labels:
+                    if int(cl.place_info()['x']) + 45 == t.army_x or int(cl.place_info()['x']) == t.army_x or int(cl.place_info()['x']) - 45 == t.army_x or int(cl.place_info()['x']) - 90 == t.army_x:
+                        cl.place(x=-100, y=-100)
+
+        if t.army_x == int(event.widget.place_info()['x']) and t.unit_points > 1 and player_status.money > 1:
+            knight = unit('knight', t, player_status, 4)
+            all_unites += [knight]
+            knight.show()
+            if not player_status.check_food():
+                knight.die()
+            root.update()
+            t.unit_points -= 2
+            player_status.money -= 2
+            if t.unit_points <= 0:
+                for cl in collection_labels:
+                    if int(cl.place_info()['x']) + 45 == t.army_x or int(cl.place_info()['x']) == t.army_x or int(cl.place_info()['x']) - 45 == t.army_x or int(cl.place_info()['x']) - 90 == t.army_x:
+                        cl.place(x=-100, y=-100)
+
+        if t.army_x == int(event.widget.place_info()['x']) + 45 and t.unit_points > 0 and player_status.money > 3:
+            trembling = unit('trembling', t, player_status, 1)
+            all_unites += [trembling]
+            trembling.show()
+            if not player_status.check_food():
+                trembling.die()
+            root.update()
+            t.unit_points -= 2
+            player_status.money -= 3
+            if t.unit_points <= 0:
+                for cl in collection_labels:
+                    if int(cl.place_info()['x']) + 45 == t.army_x or int(cl.place_info()['x']) == t.army_x or int(cl.place_info()['x']) - 45 == t.army_x or int(cl.place_info()['x']) - 90 == t.army_x:
+                        cl.place(x=-100, y=-100)
+
+        if t.army_x == int(event.widget.place_info()['x']) - 90 and t.unit_points > 0 and player_status.money > 1:
+            for t1 in t.sosed:
+                if t1.type_cell == 'port':
+                    t0 = t1
+            ship = unit('ship', t0, player_status, 4)
+            all_unites += [ship]
+            ship.show()
+            if not player_status.check_food():
+                ship.die()
+            root.update()
+            t.unit_points -= 1
+            player_status.money -= 2
+            if t.unit_points <= 0:
+                for cl in collection_labels:
+                    if int(cl.place_info()['x']) + 45 == t.army_x or int(cl.place_info()['x']) == t.army_x or int(
+                            cl.place_info()['x']) - 45 == t.army_x or int(cl.place_info()['x']) - 90 == t.army_x:
+                        cl.place(x=-100, y=-100)
+    for u in all_unites:
+        u.show()
+    money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
+
+
+
 
 def comp_collect_army(collector):
     for t in all_territories:
@@ -1804,6 +1897,7 @@ butY2 = 0.35
 butShag = 0.15
 global images, images_arm, track_status
 track_status = 0
+collection_labels = []
 images = []
 
 path = "media/map0.gif"
