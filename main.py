@@ -1216,10 +1216,10 @@ def comp_doing_fire(fire_owner):
 
 def comp_doing_attak(attak_owner):
     global number_doing, game_proc, battle_place
-    number_doing = number_doing -1
+    number_doing = number_doing - 1
     z2 = 1
     for c in all_commands:
-        if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell == 'earth':
+        if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell == 'earth' and game_proc != 'battle':
             z2 = 0
             z = 0
             local_units = []
@@ -1245,13 +1245,10 @@ def comp_doing_attak(attak_owner):
                                 c.clicked = 1
                                 c.place = 'niht'
                                 t.comp_choose_change(all_houses, c.owner, 0)
-                                print(u.owner.name + u.unit_type + u.place.place+ 'воюю')
                                 global battle_place
                                 battle_place = t
                             if enemy == player_status:
-                                global game_proc
                                 game_proc = 'battle'
-                                print('защищайся подлый трус')
                                 battle_graphic()
                             else:
                                 end_battle()
@@ -1262,7 +1259,6 @@ def comp_doing_attak(attak_owner):
                             local_units[0].place = t
                             local_units[0].target = t
                             local_units[0].clicked = 1
-                            print(local_units[0].owner.name + local_units[0].unit_type + local_units[0].place.place + 'пришел по необходимости')
                             t.comp_choose_change(all_houses, c.owner, 0)
                             t.update_owner(all_houses, all_unites)
                             c.show()
@@ -1277,14 +1273,12 @@ def comp_doing_attak(attak_owner):
                                         u.place = t2
                                         u.target = t2
                                         u.show()
-                                        print(u.owner.name + u.unit_type + u.place.place + 'разбрелся')
                                         t2.update_owner(all_houses, all_unites)
                         for u in local_units:
                             if u.place == c.place and u.can_attak(t) and afraid == 0:
                                 u.place = t
                                 u.target = t
                                 u.clicked = 1
-                                print(u.owner.name + u.unit_type + u.place.place + 'пришел от безисходности')
                                 t.comp_choose_change(all_houses, c.owner, 0)
                                 t.update_owner(all_houses, all_unites)
                                 c.show()
@@ -1306,7 +1300,6 @@ def comp_doing_attak(attak_owner):
                             u.place = t
                             u.target = t
                             u.clicked = 1
-                            print(u.owner.name + u.unit_type + u.place.place + 'я в безопасности')
                             t.update_owner(all_houses, all_unites)
                             c.show()
                         local_units[0].place = c.place
@@ -1316,6 +1309,7 @@ def comp_doing_attak(attak_owner):
 
         if c.owner == attak_owner and c.place != 'niht' and c.type == 'attak' and z2 == 1 and c.place.type_cell != 'earth':
             z = 0
+            z2 = 0
             local_units = []
             for u in all_unites:
                 if u.place == c.place:
@@ -1342,6 +1336,7 @@ def comp_doing_attak(attak_owner):
                     for u in local_units:
                         u.place = target
                         u.target = target
+                    target.update_owner(all_houses, all_unites)
                     local_units[0].place = c.place
                     local_units[0].target = c.place
                     c.place = 'niht'
@@ -1359,10 +1354,34 @@ def comp_doing_attak(attak_owner):
                         else:
                             end_battle()
 
+    if game_proc != 'battle':
+        for u in all_unites:
+            u.clicked = 0
+            u.show()
+        for h in all_houses:
+            if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
+                comp_doing_attak(h)
+            elif game_proc != 'phase_doing_attak' and (h.tron - 1) % 6 == attak_owner.tron % 6 and h == player_status:
+                for h2 in all_houses:
+                    if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
+                        comp_doing_attak(h2)
+    else:
+        global attaker
+        attaker = attak_owner
+        root.after(100, repeat_attak)
 
-    for u in all_unites:
-        u.clicked = 0
-        u.show()
+def repeat_attak():
+    global attaker, game_proc, number_doing
+    if game_proc == 'battle':
+        root.after(100, repeat_attak)
+    else:
+        root.after(1000*BATTLE_TIME, unshow_battle)
+        root.after(2000*BATTLE_TIME, cont_attak)
+        attak_owner = attaker
+
+def cont_attak():
+    global attaker, game_proc, number_doing
+    attak_owner = attaker
     for h in all_houses:
         if (h.tron - 1) % 6 == attak_owner.tron % 6 and h != player_status and number_doing > 0:
             comp_doing_attak(h)
@@ -1452,8 +1471,6 @@ def battle_graphic():
                         number_A += 1
                 def_help -= 1
                 att_help += 1
-    if game_proc == 'battle':
-        root.after(1000, battle_graphic)
 
 def end_battle():
     global game_proc
@@ -1476,9 +1493,8 @@ def end_battle():
             power_defense = power_defense + u.power * u.health
         if u.target == battle_place and u.place != battle_place:
             attak_player = u.owner
-        if u.place == battle_place:        #FIXME Need check if game_proc == battle that don't create defense and attak player with human olayer
+        if u.place == battle_place:
             defense_player = u.owner
-    print(attak_player.name +' with ' +defense_player.name)
     if defense_player != player_status:
         if attak_player == player_status:
             comp_choose_leader(defense_player, 'defense', 'with_player')
@@ -1556,10 +1572,6 @@ def end_battle():
         l.clicked = 0
         if l.name == player_status.name:
             l.clicked = 1
-    if defense_player == player_status or attak_player == player_status:
-        root.update()
-        root.after(BATTLE_TIME*1000, unshow_battle)
-        sleep(BATTLE_TIME)
 
     for c in all_commands:
         if c.clicked == 1 and (defense_player == player_status or attak_player == player_status):
@@ -1570,9 +1582,11 @@ def end_battle():
     for c in all_commands:
         if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
             z = 1
-    if z == 0 and (defense_player == player_status or attak_player == player_status):
+    if z == 0:
         game_proc = 'phase_doing_money'
         phase_doing()
+    elif z == 1:
+        Finish_button.config(text = 'В поход!')
     if power_attak > power_defense:
         local_all_unites = []
         def_unites = []
@@ -1639,17 +1653,14 @@ def end_battle():
         u.clicked = 0
     for c in all_commands:
         c.clicked = 0
-    if attak_player == player_status or defense_player == player_status:
-        for h in all_houses:
-            if (h.tron - 1) % 6 == player_status.tron % 6:
-                comp_doing_attak(h)
+    for t in all_territories:
+        t.update_owner(all_houses, all_unites)
 
 def unshow_battle():
     global  battle_window, LeaderD, LeaderA, Finish_button
     battle_window.place(x = -2000, y = 0)
     LeaderD.place(x = -1000, y = 0)
     LeaderA.place(x = -1000, y = 0)
-    Finish_button.config(text = 'В поход!')
 
 def sl5():
     sleep(5)
@@ -1672,14 +1683,77 @@ def collect_army():
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
 
 def comp_collect_army(collector):
-    print('типа что-то делает'+ collector.name)
+    for t in all_territories:
+        if t.owner == collector and t.castles == 1:
+            near_sea = 0
+            for s in t.sosed:
+                if s.type_cell != 'earth' and near_sea != 1:
+                    near_sea = 1
+                    for u in all_unites:
+                        if u.place == s and u.owner != collector:
+                            near_sea = -1
+                    if near_sea == 1:
+                        target = s
+            if near_sea == 1:
+                collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                if collection == 'ship':
+                    u_new = unit('ship', target, collector, 1)
+                    all_unites.append(u_new)
+                else:
+                    u_new = unit(collection, t, collector, 1)
+                    all_unites.append(u_new)
+            else:
+                collection = choice(['footman', 'knight', 'trembling'])
+                u_new = unit(collection, t, collector, 1)
+                all_unites.append(u_new)
+        if t.owner == collector and t.castles == 2:
+            near_sea = 0
+            for s in t.sosed:
+                if s.type_cell != 'earth' and near_sea != 1:
+                    near_sea = 1
+                    for u in all_unites:
+                        if u.place == s and u.owner != collector:
+                            near_sea = -1
+                    if near_sea == 1:
+                        target = s
+            if near_sea == 1:
+                collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                if collection == 'ship':
+                    u_new = unit('ship', target, collector, 1)
+                    all_unites.append(u_new)
+                else:
+                    u_new = unit(collection, t, collector, 1)
+                    all_unites.append(u_new)
+            else:
+                collection = choice(['footman', 'knight', 'trembling'])
+                u_new = unit(collection, t, collector, 1)
+                all_unites.append(u_new)
+            near_sea = 0
+            for s in t.sosed:
+                if s.type_cell != 'earth' and near_sea != 1:
+                    near_sea = 1
+                    for u in all_unites:
+                        if u.place == s and u.owner != collector:
+                            near_sea = -1
+                    if near_sea == 1:
+                        target = s
+            if near_sea == 1:
+                collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                if collection == 'ship':
+                    u_new = unit('ship', target, collector, 1)
+                    all_unites.append(u_new)
+                else:
+                    u_new = unit(collection, t, collector, 1)
+                    all_unites.append(u_new)
+            else:
+                collection = choice(['footman', 'knight', 'trembling'])
+                u_new = unit(collection, t, collector, 1)
+                all_unites.append(u_new)
+    for u in all_unites:
+        u.show()
 
 def test_button():
-    for c in all_commands:
-        if c.place == 'niht':
-            print(c.type + c.owner.name+ c.place)
-        else:
-            print(c.type + c.owner.name+ c.place.place)
+    print(game_proc)
 
 def update_screen():
     for c in all_commands:
