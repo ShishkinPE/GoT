@@ -465,6 +465,8 @@ def create_unites():
     us2 = unit('footman', winterfall, stark, 2)
     us3 = unit('footman', belaya_gavan, stark,1)
     us4 = unit('ship', drozhashee_more, stark, 1)
+    ustest1 = unit('ship', drozhashee_more, stark, 1)
+    ustest2 = unit('ship', drozhashee_more, stark, 1)
     ug1 = unit('knight', payk, greydjoy, 1)
     ug2 = unit('footman', payk, greydjoy, 2)
     ug3 = unit('footman', serovodye, greydjoy, 1)
@@ -489,7 +491,7 @@ def create_unites():
     ul4 = unit('knight', pidortown, lannister,1)
     ul5 = unit('ship', pidor_port, lannister,1)
 
-    all_unites = [us1, us2, us3, us4, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
+    all_unites = [us1, us2, us3, us4, ustest2, ustest1, ug1, ug2, ug3, ug4, ug5, ub1, ub2, ub3, ub4, ub5, um1, um2, um3, um4, ut1, ut2, ut3, ut4, ul1, ul2, ul3, ul4, ul5]
 
     for u in all_unites:
         u.show()
@@ -1241,10 +1243,13 @@ def comp_doing_attak(attak_owner):
                         if local_units[0].can_attak(t) and c.place != 'niht' and len(local_units) > z_enemy - 1:
                             for u in local_units:
                                 u.target = t
-                                u.clicked = 1
-                                c.clicked = 1
-                                c.place = 'niht'
-                                t.comp_choose_change(all_houses, c.owner, 0)
+                                if attak_owner.check_food():
+                                    u.clicked = 1
+                                    c.clicked = 1
+                                    c.place = 'niht'
+                                    t.comp_choose_change(all_houses, c.owner, 0)
+                                else:
+                                    u.target = u.place
                                 global battle_place
                                 battle_place = t
                             if enemy == player_status:
@@ -1256,12 +1261,15 @@ def comp_doing_attak(attak_owner):
                             afraid = 2
                     if afraid != 1:
                         if local_units[0].place == c.place and local_units[0].can_attak(t) and afraid == 0:
-                            local_units[0].place = t
                             local_units[0].target = t
-                            local_units[0].clicked = 1
-                            t.comp_choose_change(all_houses, c.owner, 0)
-                            t.update_owner(all_houses, all_unites)
-                            c.show()
+                            if attak_owner.check_food():
+                                local_units[0].place = t
+                                local_units[0].clicked = 1
+                                t.comp_choose_change(all_houses, c.owner, 0)
+                                t.update_owner(all_houses, all_unites)
+                                c.show()
+                            else:
+                                local_units[0].target = local_units[1].place
                         for u in local_units:
                             for t2 in all_territories:
                                 if u.can_attak(t2) and u.place == c.place and t2.owner != attak_owner:
@@ -1270,18 +1278,24 @@ def comp_doing_attak(attak_owner):
                                         if u2.place == t2:
                                             is_anybody_at_home = 1
                                     if is_anybody_at_home == 0:
-                                        u.place = t2
                                         u.target = t2
-                                        u.show()
-                                        t2.update_owner(all_houses, all_unites)
+                                        if attak_owner.check_food():
+                                            u.place = t2
+                                            u.show()
+                                            t2.update_owner(all_houses, all_unites)
+                                        else:
+                                            u.target = u.place
                         for u in local_units:
                             if u.place == c.place and u.can_attak(t) and afraid == 0:
-                                u.place = t
                                 u.target = t
-                                u.clicked = 1
-                                t.comp_choose_change(all_houses, c.owner, 0)
-                                t.update_owner(all_houses, all_unites)
-                                c.show()
+                                if attak_owner.check_food():
+                                    u.place = t
+                                    u.clicked = 1
+                                    t.comp_choose_change(all_houses, c.owner, 0)
+                                    t.update_owner(all_houses, all_unites)
+                                    c.show()
+                                else:
+                                    u.target = u.place
                         c.place = 'niht'
                         c.show()
             for t in all_territories:
@@ -1297,11 +1311,14 @@ def comp_doing_attak(attak_owner):
                                 if noempty == 0:
                                     target = s
                         for u in local_units:
-                            u.place = t
                             u.target = t
-                            u.clicked = 1
-                            t.update_owner(all_houses, all_unites)
-                            c.show()
+                            if attak_owner.check_food():
+                                u.place = t
+                                u.clicked = 1
+                                t.update_owner(all_houses, all_unites)
+                                c.show()
+                            else:
+                                u.target = u.place
                         local_units[0].place = c.place
                         local_units[0].target = c.place
                         c.place = 'niht'
@@ -1334,8 +1351,11 @@ def comp_doing_attak(attak_owner):
                         enemy = u.owner
                 if z_enemy == 0 and target != 0:
                     for u in local_units:
-                        u.place = target
                         u.target = target
+                        if attak_owner.check_food():
+                            u.place = target
+                        else:
+                            u.target = u.place
                     target.update_owner(all_houses, all_unites)
                     local_units[0].place = c.place
                     local_units[0].target = c.place
