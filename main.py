@@ -1792,9 +1792,6 @@ def collect_unit(event):
         u.show()
     money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
 
-
-
-
 def comp_collect_army(collector):
     for t in all_territories:
         if t.owner == collector and t.castles == 1:
