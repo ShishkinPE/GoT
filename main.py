@@ -1922,8 +1922,6 @@ Finish_button=Button(root, text = 'дима мокеев петух', command = 
 Test_button=Button(root, text = 'Манул', command = test_button)
 Test_button.place(x=200, y=50)
 title_label=Label(root, text='дима мокеев петух')
-path = "media/test.gif"
-img2 = PhotoImage(file=path)
 battle_img = PhotoImage(file = "media/battle.gif")
 battle_window = Label(root, width = SX() * 8 // 10, heigh = SY() * 8 // 10, image = battle_img)
 LeaderD=Label(root)
