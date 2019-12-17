@@ -255,6 +255,17 @@ class unit:
             self.power = 4
         elif self.unit_type == 'test':
             self.power = 0
+        self.tx = 'a'
+        if self.unit_type == 'footman':
+            self.tx = 'Это пеший боевой юнит. Его сила равняется 1. \n Он может перемещаться только по земле. \n Стоимость при найме: 1 очко сбора, 1 монета'
+        if self.unit_type == 'knight':
+            self.tx = 'Это конный рыцарь. Его сила равняется 2. \n Он может перемещаться только по земле. \n Стоимость при найме: 2 очка сбора, 2 монеты'
+        if self.unit_type == 'trembling':
+            self.tx = 'Это осадное орудие. Его сила равняется 4 при осаде замка, 0 во всех остальных случаях. \n Он может перемещаться только по земле. ' \
+                      '\n Стоимость при найме: 2 очка сбора, 3 монеты'
+        if self.unit_type == 'ship':
+            self.tx = 'Это боевой корабль. Его сила равняется 1. \n Он может перемещаться только по воде и портам. \n Стоимость при найме: 1 очко сбора, 2 монеты ' \
+                      '\n кроме того по морю, в котором есть ваш корабль \n можно быстро транспортировать своих юнитов'
         self.place = place
         self.target = place
         self.owner = owner
@@ -316,6 +327,10 @@ class unit:
         self.show()
         self.show_battle(-10, -10)
 
+    def motion_help(self):
+        global help_label
+        help_label.config(text = self.tx)
+        help_label.place(x=0, y=0)
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -901,6 +916,17 @@ def motion(event):
         elif (event.x < SX() - 330)  or (event.y > 135 - h):
             for c in all_commands:
                 c.close()
+
+
+def motion_help(event):
+    global help_label
+    r=0
+    for u in all_unites:
+        if event.widget == u.id:
+            u.motion_help()
+            r=1
+    if r == 0:
+        help_label.place(x=-500, y=-500)
 
 
 def main_click(event):
@@ -2107,7 +2133,10 @@ root.bind('<Button-1>', main_click)
 image_map.bind('<Button-4>', map_down)
 image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
+root.bind('<Motion>', motion_help)
 
+
+help_label = Label(root, text='дима мокеев петух')
 Finish_button = Button(root, text='дима мокеев петух', command=finish_button_click)
 Test_button = Button(root, text='Манул', command=test_button)
 Test_button.place(x=-200, y=50)
