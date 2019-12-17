@@ -952,6 +952,28 @@ def motion_help(event):
         help_label.config(text=tx)
         help_label.place(x=SX(), y=0, anchor = 'ne')
         r = 1
+    for t in track_images:
+        if t == event.widget:
+            re =-1
+            for i in range(18):
+                if t == track_images[i]:
+                    re = i
+            tx = ''
+            if 0 <= re < 3:
+                tx = 'Это дом Старков'
+            elif re < 6:
+                tx = 'Это дом Грейджоев'
+            elif re < 9:
+                tx = 'Это дом Ланнистеров \n Создатели этой игры не любят Ланнистеров'
+            elif re < 12:
+                tx = 'Это дом Мартеллов'
+            elif re < 15:
+                tx = 'Это дом Тиррелов'
+            elif re < 18:
+                tx = 'Это дом Баратеонов'
+            r = 1
+            help_label.config(text=tx)
+            help_label.place(x=SX(), y=0, anchor='ne')
     if r == 0:
         help_label.place(x=-500, y=-500, anchor = 'nw')
 
