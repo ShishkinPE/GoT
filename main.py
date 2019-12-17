@@ -837,7 +837,8 @@ def phase_doing():
 
 
 def phase_vesteros():
-    global food_label, game_proc, money_label
+    global food_label, game_proc, money_label, all_territories
+    shuffle(all_territories)
     for c in all_commands:
         c.place = 'niht'
         c.clicked = 0
@@ -902,6 +903,7 @@ def phase_vesteros():
     for h in all_houses:
         h.castle_num = 0
     for t in all_territories:
+        t.update_owner(all_houses, all_unites)
         if t.owner != 0 and t.castles > 0:
             t.owner.castle_num = t.owner.castle_num + 1
     for h in all_houses:
@@ -1796,6 +1798,10 @@ def end_battle():
         for u in local_all_unites:
             if u.place == battle_place:
                 def_unites.append(u)
+        for u in def_unites:
+            if u.unit_type == 'trembling':
+                def_unites.remove(u)
+                u.die
         died_u = attak_swords - defence_towers
         if died_u < 0:
             died_u = 0
@@ -1837,6 +1843,10 @@ def end_battle():
         for u in local_all_unites:
             if u.target == battle_place and u.place != battle_place:
                 att_unites.append(u)
+        for u in att_unites:
+            if u.unit_type == 'trembling':
+                def_unites.remove(u)
+                u.die
         died_u = defence_swords - attak_towers
         if died_u < 0:
             died_u = 0
