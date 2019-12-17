@@ -1555,23 +1555,24 @@ def battle_graphic():
     att_help = 1
     for t in  battle_place.sosed:
         for c in all_commands:
-            if c.place == t and c.type == 'boost' and defense_player == c.owner:
-                c.show_battle(def_help)
-                number_D = 0
-                for u in all_unites:
-                    if u.place == c.place:
-                        u.show_battle(number_D, def_help)
-                        number_D += 1
-                def_help -= 1
-            if c.place == t and c.type == 'boost' and attak_player == c.owner:
-                c.show_battle(att_help)
-                number_A = 0
-                for u in all_unites:
-                    if u.place == c.place:
-                        u.show_battle(number_A, att_help)
-                        number_A += 1
-                def_help -= 1
-                att_help += 1
+            if c.place == t and c.type == 'boost' and (c.place.type_cell == battle_place.type_cell or (c.place.type_cell == 'water' and battle_place.type_cell != 'port') \
+                            or (c.place.type_cell == 'port' and battle_place.type_cell == 'water')):
+                if defense_player == c.owner:
+                    c.show_battle(def_help)
+                    number_D = 0
+                    for u in all_unites:
+                        if u.place == c.place:
+                            u.show_battle(number_D, def_help)
+                            number_D += 1
+                    def_help -= 1
+                if  attak_player == c.owner:
+                    c.show_battle(att_help)
+                    number_A = 0
+                    for u in all_unites:
+                        if u.place == c.place:
+                            u.show_battle(number_A, att_help)
+                            number_A += 1
+                    att_help += 1
 
 
 def end_battle():
@@ -1623,7 +1624,9 @@ def end_battle():
                             power_attak += u.power
                         elif u.place == c.place and u.unit_type == 'ship':
                             power_attak += u.power
-                    power_attak += c.power
+                    if c.place.type_cell == battle_place.type_cell or (c.place.type_cell == 'water' and battle_place.type_cell != 'port') \
+                            or (c.place.type_cell == 'port' and battle_place.type_cell == 'water'):
+                        power_attak += c.power
                 if c.owner == defense_player:
                     for u in all_unites:
                         if u.place == c.place and u.unit_type == 'trambeling' and t.castles > 0:
@@ -1633,13 +1636,7 @@ def end_battle():
                         elif u.place == c.place and u.unit_type == 'ship':
                             power_defense += u.power
                     power_defense += c.power
-                for u in all_unites:
-                    if u.owner == attak_player and u.unit_type != 'trembling':
-                        power_attak = power_attak + u.power * u.health
-                    if u.owner == attak_player and u.unit_type == 'trembling' and battle_place.castles > 0:
-                        power_attak = power_attak + u.power * u.health
-                    if u.owner == defense_player and u.unit_type != 'trembling':
-                        power_defense = power_defense + u.power * u.health
+
     for l in all_leaders:
         if l.clicked == 1 and l.owner == attak_player:
             power_attak = power_attak + l.power
@@ -1653,7 +1650,8 @@ def end_battle():
             defence_towers = l.towers
     power_attak += (6 - attak_player.sword) * 0.1
     power_defense += (6 - defense_player.sword) * 0.1
-
+    print('attack=' + str(power_attak))
+    print('def = ' + str(power_defense))
     #next part of cod to spin leaders ceards
     att_l_unusable = 0
     def_l_unusable = 0
