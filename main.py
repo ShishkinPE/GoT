@@ -960,7 +960,7 @@ def motion_help(event):
                     re = i
             tx = ''
             if 0 <= re < 3:
-                tx = 'Это дом Старков'
+                tx = 'Это дом Старков \n Старки классные'
                 if player_status == stark:
                     tx += '\n Вы играете за этот дом \n Цвет фишек - белый'
             elif re < 6:
