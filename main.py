@@ -875,15 +875,17 @@ def phase_vesteros():
             t.owner.castle_num = t.owner.castle_num + 1
     for h in all_houses:
         if h.castle_num > 6:
-            path = 'media/houses/' + h.name + '.gif'
+            path = 'media/victory/' + h.name + '.gif'
             global img_win
             img_win = PhotoImage(file = path)
             Label_win = Label(image = img_win)
-            Label_win.place(x = 0, y = 0)
+            Label_win.place(x = -1, y = -1)
             root.after(10000, final)
+
 
 def final():
     exit()
+
 
 def motion(event):
     global h, game_proc, all_commands
