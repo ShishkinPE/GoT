@@ -961,16 +961,28 @@ def motion_help(event):
             tx = ''
             if 0 <= re < 3:
                 tx = 'Это дом Старков'
+                if player_status == stark:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - белый'
             elif re < 6:
                 tx = 'Это дом Грейджоев'
+                if player_status == greydjoy:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - чёрный'
             elif re < 9:
                 tx = 'Это дом Ланнистеров \n Создатели этой игры не любят Ланнистеров'
+                if player_status == lannister:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - красный'
             elif re < 12:
                 tx = 'Это дом Мартеллов'
+                if player_status == martell:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - оранжевый'
             elif re < 15:
                 tx = 'Это дом Тиррелов'
+                if player_status == tirrel:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - зелёный'
             elif re < 18:
                 tx = 'Это дом Баратеонов'
+                if player_status == barateon:
+                    tx += '\n Вы играете за этот дом \n Цвет фишек - жёлтый'
             r = 1
             help_label.config(text=tx)
             help_label.place(x=SX(), y=0, anchor='ne')
