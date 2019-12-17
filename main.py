@@ -58,6 +58,10 @@ class command:
     def show_battle(self, type):
         self.id2.place(x = 20 + type * 96, y = 260)
 
+    def motion_help(self):
+        global help_label
+        help_label.config(text = self.tx)
+        help_label.place(x=0, y=0)
 
 class attak(command):
 
@@ -66,6 +70,8 @@ class attak(command):
         self.type = 'attak'
         self.x0 = x0
         self.y0 = y0
+        self.tx = 'Это приказ похода.  \n Положив его в провинцию с вашими юнитами, \n вы сможете переместить их в соседние провинции и атаковать врага. \n' \
+                  'поход имеет модификатор силы +1 +0 -1 \n которые дают соответствующий бонус к силе во время битвы с противником'
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -124,6 +130,8 @@ class boost(command):
         global  image_map
         self.type = 'boost'
         self.x0 = x0
+        self.tx = 'Это приказ подмоги. \n Юниты в провинции с приказом подмоги добавляют вклад равный их силе \n в битву на провинции соседней с приказом.\n' \
+                  ' Кроме того приказ подмоги со звездой дополнительно даёт +1 силы'
         self.y0 = y0
         self.clicked = 0
         self.place = 'niht'
@@ -146,11 +154,13 @@ class boost(command):
 class defense(command):
     def doing(self,event):
         pass
+
     def __init__(self, power, owner, x0, y0):
         global  image_map
         self.type = 'defense'
         self.x0 = x0
         self.y0 = y0
+        self.tx = 'Это приказ обороны. \n Вносит вклад +1 или +2 в битву \n на провинции, в которой вы обороняетесь'
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -178,6 +188,8 @@ class fire(command):
         self.type = 'fire'
         self.x0 = x0
         self.y0 = y0
+        self.tx = 'Это приказ набега \n Сжигает приказы подмоги, усиления власти и набега противника. \n Кроме того, приказ набега со звездой сжигает приказ обороны. \n' \
+                  ' Чтобы использовать кликните сначала на приказ набега, \n а затем на вражеский приказ, который хотите сжечь'
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -222,6 +234,9 @@ class money_command(command):
         self.type = 'money_command'
         self.x0 = x0
         self.y0 = y0
+        self.tx = 'Это приказ усиленияя власти. \n После всех походов приносит количество монет равное: \n' \
+                  ' количество корон на территории, в которую был отдан \n + 1 + 1(в случае, если приказ со звездой)\n'\
+                  'Монеты необходимы для сбора  \nи переоснащения вашей армии.'
         self.clicked = 0
         self.place = 'niht'
         self.power = power
@@ -331,6 +346,7 @@ class unit:
         global help_label
         help_label.config(text = self.tx)
         help_label.place(x=0, y=0)
+
 
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
@@ -922,8 +938,12 @@ def motion_help(event):
     global help_label
     r=0
     for u in all_unites:
-        if event.widget == u.id:
+        if event.widget == u.id or event.widget == u.id2:
             u.motion_help()
+            r=1
+    for c in all_commands:
+        if event.widget == c.id:
+            c.motion_help()
             r=1
     if r == 0:
         help_label.place(x=-500, y=-500)
