@@ -935,7 +935,7 @@ def motion(event):
 
 
 def motion_help(event):
-    global help_label
+    global help_label, image_track
     r=0
     for u in all_unites:
         if event.widget == u.id or event.widget == u.id2:
@@ -945,8 +945,15 @@ def motion_help(event):
         if event.widget == c.id:
             c.motion_help()
             r=1
+    if event.widget == image_track:
+        tx = 'Это треки влияния. \n Первый трек - трек железного трона.\n Он определяет очерёдность хода \n' \
+             'Второй трек - трек вотчин. \nОн определяет победителя при равенстве сил в битве.\n' \
+             'Третий трек - трек королевского двора. \n Он определяет количество приказов со звездой'
+        help_label.config(text=tx)
+        help_label.place(x=SX(), y=0, anchor = 'ne')
+        r = 1
     if r == 0:
-        help_label.place(x=-500, y=-500)
+        help_label.place(x=-500, y=-500, anchor = 'nw')
 
 
 def main_click(event):
@@ -2136,6 +2143,7 @@ path = "media/map0.gif"
 img = PhotoImage(file=path)
 images.append(img)
 image_map = Label(canv, image=img)
+image_track = 0
 
 game_proc = 'menu'
 player_status = 'niht'
