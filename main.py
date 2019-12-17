@@ -806,7 +806,7 @@ def phase_doing():
 
 
 def phase_vesteros():
-    global food_label, game_proc
+    global food_label, game_proc, money_label
     for c in all_commands:
         c.place = 'niht'
         c.clicked = 0
@@ -855,7 +855,6 @@ def phase_vesteros():
                 t.owner.money = t.owner.money + t.money
         title_label.config(text='Сбор  власти')
         title_label.place(x=SX() * 3.5 // 10, y=SY() // 20)
-        global money_label
         money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
         Finish_button.config(text='...')
         root.after(3000, delete_title)
@@ -866,6 +865,7 @@ def phase_vesteros():
         title_label.config(text = 'Переоснащение армии')
         title_label.place(x = SX()*3.5//10, y = SY()//20)
         Finish_button.config(text = '...')
+        money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
         root.after(3000, delete_title)
         root.after(3000, phase_plans)
     for h in all_houses:
@@ -1779,6 +1779,10 @@ def end_battle():
 def unshow_battle():
     global  battle_window, LeaderD, LeaderA, Finish_button, unshow_bat
     if unshow_bat == 1:
+        for u in all_unites:
+            u.show_battle(-1, -1)
+        for c in all_commands:
+            c.show_battle(-1)
         battle_window.place(x = -2000, y = 0)
         LeaderD.place(x = -1000, y = 0)
         LeaderA.place(x = -1000, y = 0)
@@ -2053,6 +2057,10 @@ def update_screen():
             c.close()
     for u in all_unites:
         u.show()
+    if game_proc == 'battle':
+        for l in all_leaders:
+            if l.clicked == 1 and l.name == player_status.name:
+                battle_graphic()
     root.after(2000, update_screen)
 
 
@@ -2102,7 +2110,7 @@ image_map.bind('<Motion>', motion)
 
 Finish_button = Button(root, text='дима мокеев петух', command=finish_button_click)
 Test_button = Button(root, text='Манул', command=test_button)
-Test_button.place(x=200, y=50)
+Test_button.place(x=-200, y=50)
 title_label = Label(root, text='дима мокеев петух')
 battle_img = PhotoImage(file="media/battle.gif")
 battle_window = Label(root, width=SX() * 8 // 10, heigh=SY() * 8 // 10, image=battle_img)
