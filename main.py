@@ -58,6 +58,7 @@ class command:
     def show_battle(self, type):
         self.id2.place(x = 20 + type * 96, y = 260)
 
+
 class attak(command):
 
     def __init__(self, power, owner, x0, y0):
@@ -114,6 +115,7 @@ class attak(command):
                         u.clicked = 0
                     u.show()
 
+
 class boost(command):
     def doing(self, event):
         pass
@@ -139,6 +141,7 @@ class boost(command):
         self.id = Label(image_map, image = self.img)
         self.id2 = Label(battle_window, image=self.img)
         self.show()
+
 
 class defense(command):
     def doing(self,event):
@@ -166,6 +169,7 @@ class defense(command):
         self.id = Label(image_map, image = self.img)
         self.id2 = Label(battle_window, image=self.img)
         self.show()
+
 
 class fire(command):
 
@@ -208,6 +212,7 @@ class fire(command):
                         if (h.tron - 1) % 6 == player_status.tron % 6:
                             comp_doing_fire(h)
 
+
 class money_command(command):
     def doing(self, event):
         pass
@@ -233,6 +238,7 @@ class money_command(command):
         self.id = Label(image_map, image = self.img)
         self.id2 = Label(battle_window, image=self.img)
         self.show()
+
 
 class unit:
     def __eq__(self, other):
@@ -310,6 +316,7 @@ class unit:
         self.show()
         self.show_battle(-10, -10)
 
+
 class house:
     def __init__(self, name, food, castle_num, status, army, territory, tron, sword, voron):
         self.name = name
@@ -368,6 +375,7 @@ class house:
         if self.food >= 6:
             return [4,3,2,2,2]
 
+
 class leaders:
     def __init__(self, owner, name, power, swords, towers):
         self.owner = owner
@@ -384,6 +392,7 @@ class leaders:
         self.img=PhotoImage(file = path)
         self.id.config(image = self.img)
 
+
 def menu_draw(canv):
     global images, image_menu
     path="media/menu.gif"
@@ -391,6 +400,7 @@ def menu_draw(canv):
     image_menu = Label(canv, image=img)
     images.append(img)
     image_menu.place(x = 0,y = 0)
+
 
 def menu_1(x,y):
     global game_proc
@@ -404,6 +414,7 @@ def menu_1(x,y):
     elif game_proc == 'exit':
         exit()
 
+
 def menu_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * butY1 and y < SY() * butY2:
         return 'choise'
@@ -416,13 +427,15 @@ def menu_click(x, y):
     else:
         return 'menu'
 
+
 def menu_house_draw(canv):
     global images, image_house
-    path="media/menu-house.gif"
+    path = "media/menu-house.gif"
     img = PhotoImage(file=path)
     images.append(img)
     image_house=Label(canv, image=img)
-    image_house.place(x = 0,y = 0)
+    image_house.place(x=0, y=0)
+
 
 def map_up(event):
     global h
@@ -430,17 +443,20 @@ def map_up(event):
         h = h - 15
     image_map.place(x=0, y=h)
 
+
 def map_down(event):
     global h
     if h < 0:
         h = h + 15
     image_map.place(x=0, y=h)
 
+
 def show_map(canv):
     global image_map, images, image_menu, image_house
     image_map.place(x=0, y=0)
     image_menu.place(x=-10000, y=0)
     image_house.place(x=-10000, y=0)
+
 
 def show_track():
     global image_track, all_houses, track_images
@@ -450,6 +466,7 @@ def show_track():
         track_images[3*i+1].place(x=157 + (all_houses[i].sword - 1) * 93, y=136)
         track_images[3*i+2].place(x=157 + (all_houses[i].voron - 1) * 93, y=226)
 
+
 def close_track():
     global image_track, track_images
     image_track.place(x=700, y=-900)
@@ -457,6 +474,7 @@ def close_track():
         track_images[3*i-2].place(x=157 + (all_houses[i].tron - 1) * 93, y=-45)
         track_images[3*i-1].place(x=157 + (all_houses[i].sword - 1) * 93, y=-134)
         track_images[3*i].place(x=157 + (all_houses[i].voron - 1) * 93, y=-225)
+
 
 def create_unites():
     global all_unites
@@ -497,10 +515,12 @@ def create_unites():
     for t in all_territories:
         t.update_owner(all_houses, all_unites)
 
+
 def create_track():
     global images, image_track, all_houses, track_images, all_houses
     # 0 0 = 157, 45
     # dh = 90 dx = 95
+    print('1')
     path = "media/track-test.gif"
     img = PhotoImage(file = path)
     images.append(img)
@@ -515,6 +535,7 @@ def create_track():
         track_images.append(l2)
         track_images.append(l3)
         images.append(image)
+
 
 def create_command():
     global all_houses
@@ -549,6 +570,7 @@ def create_command():
         all_commands.append(money_command_3)
         all_commands.append(money_command_1)
         all_commands.append(money_command_2)
+
 
 def create_leaders():
     #sum power = 15
@@ -651,6 +673,7 @@ def create_leaders():
     all_leaders.append(leader)
     #check_balance()
 
+
 def check_balance():
     for h in all_houses:
         power = 0
@@ -660,6 +683,7 @@ def check_balance():
                 power += l.power
                 s += l.swords + l.towers
         print(h.name + ' have ' + str(s) + ' swords + towers and ' + str(power) + ' power')
+
 
 def choise_house_click(x, y):
     if x > SX() * butX1 and x < SX() * butX2 and y > SY() * (butY1-butShag) and y < SY() * (butY2-butShag):
@@ -676,6 +700,7 @@ def choise_house_click(x, y):
         return 'stark'
     else:
         return 'choise'
+
 
 def start_game():
     global game_proc, player_status, all_unites, images, money_label, food_label
@@ -732,6 +757,7 @@ def start_game():
     money_label = Label(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
     money_label.place(x=0, y=SY(), anchor = 'sw')
 
+
 def phase_plans():
     global game_proc, all_commands, player_status
     for c in all_commands:
@@ -742,6 +768,7 @@ def phase_plans():
     title_label.place(x=SX()*0.4, y= SY()*0.05)
     title_label.config(text='Фаза замыслов', font="Arial 30")
     root.after(2000, delete_title)
+
 
 def phase_doing():
     global game_proc, all_commands, player_status, all_houses, number_doing
@@ -777,6 +804,7 @@ def phase_doing():
         root.after(3000, delete_title)
         Finish_button.config(text='Завершить сбор власти')
 
+
 def phase_vesteros():
     global food_label, game_proc
     for c in all_commands:
@@ -785,7 +813,7 @@ def phase_vesteros():
     for u in all_unites:
         u.health = 1
         u.clicked = 0
-    phase = choice([ 'collect_army'])
+    phase = choice([ 'collect_army', 'food_phase', 'winter_is_coming', 'army_pay', 'money'])
     if phase == 'exit':
         exit()
     elif phase == 'food_phase':
@@ -799,7 +827,11 @@ def phase_vesteros():
         for f in player_status.food_array():
             food_text += ' ' + str(f)
         food_label.config(text = 'Ваше снабжение: ' + food_text)
-        phase_plans()
+        title_label.config(text='Доставка продовольсвия')
+        title_label.place(x=SX() * 3.5 // 10, y=SY() // 20)
+        Finish_button.config(text = '...')
+        root.after(3000, delete_title)
+        root.after(3000, phase_plans)
     elif phase =='collect_army':
         u = 1
         while u < 7:
@@ -811,6 +843,47 @@ def phase_vesteros():
                     game_proc = 'collect_army'
                     u = 7
             u = u + 1
+    elif phase == 'winter_is_coming':
+        title_label.config(text='Зима близко!')
+        title_label.place(x=SX() * 3.75 // 10, y=SY() // 20)
+        Finish_button.config(text = '...')
+        root.after(3000, delete_title)
+        root.after(3000, phase_plans)
+    elif phase == 'money':
+        for t in all_territories:
+            if t.owner != 0:
+                t.owner.money = t.owner.money + t.money
+        title_label.config(text='Сбор  власти')
+        title_label.place(x=SX() * 3.5 // 10, y=SY() // 20)
+        global money_label
+        money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
+        Finish_button.config(text='...')
+        root.after(3000, delete_title)
+        root.after(3000, phase_plans)
+    elif phase == 'army_pay':
+        for u in all_unites:
+            u.owner.money = u.owner.money - 1
+        title_label.config(text = 'Переоснащение армии')
+        title_label.place(x = SX()*3.5//10, y = SY()//20)
+        Finish_button.config(text = '...')
+        root.after(3000, delete_title)
+        root.after(3000, phase_plans)
+    for h in all_houses:
+        h.castle_num = 0
+    for t in all_territories:
+        if t.owner != 0 and t.castles > 0:
+            t.owner.castle_num = t.owner.castle_num + 1
+    for h in all_houses:
+        if h.castle_num > 6:
+            path = 'media/houses/' + h.name + '.gif'
+            global img_win
+            img_win = PhotoImage(file = path)
+            Label_win = Label(image = img_win)
+            Label_win.place(x = 0, y = 0)
+            root.after(10000, final)
+
+def final():
+    exit()
 
 def motion(event):
     global h, game_proc, all_commands
@@ -826,6 +899,7 @@ def motion(event):
         elif (event.x < SX() - 330)  or (event.y > 135 - h):
             for c in all_commands:
                 c.close()
+
 
 def main_click(event):
     global game_proc, h, all_commands, all_unites, battle_place
@@ -882,6 +956,7 @@ def main_click(event):
                     l.clicked = 1
                     LeaderD.config(image=l.img)
                     z = -1
+
 
 def finish_button_click():
     global game_proc, all_unites, all_houses, all_commands, player_status
@@ -956,6 +1031,7 @@ def finish_button_click():
         for cl in collection_labels:
             cl.place(x=-100, y=-100)
         phase_plans()
+
 
 def comp_plans():
     global all_commands, all_territories, all_houses, all_unites, player_status
@@ -1189,6 +1265,7 @@ def comp_plans():
                             c.show()
                             t.command_have = 1
 
+
 def comp_doing_fire(fire_owner):
     global all_commands, player_status, all_houses, number_doing
     number_doing = number_doing - 1
@@ -1214,6 +1291,7 @@ def comp_doing_fire(fire_owner):
             for h2 in all_houses:
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_fire(h2)
+
 
 def comp_doing_attak(attak_owner):
     global number_doing, game_proc, battle_place
@@ -1268,7 +1346,7 @@ def comp_doing_attak(attak_owner):
                                 t.update_owner(all_houses, all_unites)
                                 c.show()
                             else:
-                                local_units[0].target = local_units[1].place
+                                local_units[0].target = local_units[0].place
                         for u in local_units:
                             for t2 in all_territories:
                                 if u.can_attak(t2) and u.place == c.place and t2.owner != attak_owner:
@@ -1389,14 +1467,15 @@ def comp_doing_attak(attak_owner):
         attaker = attak_owner
         root.after(100, repeat_attak)
 
+
 def repeat_attak():
     global attaker, game_proc, number_doing
     if game_proc == 'battle':
         root.after(100, repeat_attak)
     else:
-        root.after(1000*BATTLE_TIME, unshow_battle)
         root.after(2000*BATTLE_TIME, cont_attak)
         attak_owner = attaker
+
 
 def cont_attak():
     global attaker, game_proc, number_doing
@@ -1408,6 +1487,7 @@ def cont_attak():
             for h2 in all_houses:
                 if (h2.tron - 1) % 6 == h.tron % 6 and number_doing > 0:
                     comp_doing_attak(h2)
+
 
 def comp_choose_leader(owner, status, with_who):
     global LeaderD, LeaderA
@@ -1432,8 +1512,10 @@ def comp_choose_leader(owner, status, with_who):
             if status == 'defense':
                 LeaderD.config(image = l.img)
 
+
 def delete_title():
     title_label.place(x=-1000, y=0)
+
 
 def battle_graphic():
     global battle_place, all_leaders, all_unites, game_proc
@@ -1490,6 +1572,7 @@ def battle_graphic():
                         number_A += 1
                 def_help -= 1
                 att_help += 1
+
 
 def end_battle():
     global game_proc
@@ -1597,6 +1680,19 @@ def end_battle():
             c.clicked = 0
             c.place = 'niht'
             c.show()
+    if attak_player == player_status or defense_player == player_status:
+        global unshow_bat
+        if unshow_bat == 0:
+            unshow_bat = 1
+            root.after(1000*BATTLE_TIME, unshow_battle)
+            root.update()
+            sleep(BATTLE_TIME)
+        elif unshow_bat == 1:
+            unshow_bat = 2
+            root.after(1000*BATTLE_TIME, unshow_battle)
+            root.update()
+            sleep(BATTLE_TIME)
+
     z = 0
     for c in all_commands:
         if c.place != 'niht' and c.type == 'attak' and c.owner == player_status:
@@ -1674,24 +1770,31 @@ def end_battle():
         c.clicked = 0
     for t in all_territories:
         t.update_owner(all_houses, all_unites)
+    if attak_player == player_status or defense_player == player_status:
+        for h in all_houses:
+            if (h.tron - 1) % 6 == player_status.tron % 6:
+                comp_doing_attak(h)
+
 
 def unshow_battle():
-    global  battle_window, LeaderD, LeaderA, Finish_button
-    battle_window.place(x = -2000, y = 0)
-    LeaderD.place(x = -1000, y = 0)
-    LeaderA.place(x = -1000, y = 0)
+    global  battle_window, LeaderD, LeaderA, Finish_button, unshow_bat
+    if unshow_bat == 1:
+        battle_window.place(x = -2000, y = 0)
+        LeaderD.place(x = -1000, y = 0)
+        LeaderA.place(x = -1000, y = 0)
+        unshow_bat = 0
+    if unshow_bat == 2:
+        unshow_but = 1
+
 
 def collect_money():
     global  money_label
     for c in all_commands:
         if c.place != 'niht':
-            if c.type == 'money_command' and c.owner == player_status and c.place.castles > 0:
-                collect_army()
-            if c.type == 'money_command' and c.owner == player_status and c.place.castles > 0:
-                comp_collect_army()
             if c.type == 'money_command' and c.place != 'niht':
-                c.owner.money += 1 + c.place.money
+                c.owner.money += 1 + c.place.money + c.st
         money_label.config(text = 'Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
+
 
 def collect_army():
     global game_proc, Finish_button, images, collection_labels
@@ -1724,6 +1827,7 @@ def collect_army():
 
 
     Finish_button.place(x=SX()*0.45, y=SY()*0.9)
+
 
 def collect_unit(event):
     global  all_unites, player_status, collection_labels
@@ -1792,9 +1896,10 @@ def collect_unit(event):
         u.show()
     money_label.config(text='Kоличесто жетонов власти в вашем распоряжении: ' + str(player_status.money))
 
+
 def comp_collect_army(collector):
     for t in all_territories:
-        if t.owner == collector and t.castles == 1:
+        if t.owner == collector and t.castles == 1 and collector.money > 0:
             near_sea = 0
             for s in t.sosed:
                 if s.type_cell != 'earth' and near_sea != 1:
@@ -1805,17 +1910,40 @@ def comp_collect_army(collector):
                     if near_sea == 1:
                         target = s
             if near_sea == 1:
-                collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                collection = choice(['footman', 'ship'])
                 if collection == 'ship':
                     u_new = unit('ship', target, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        collector.money = collector.money - 2
                 else:
                     u_new = unit(collection, t, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        if collection == 'footman':
+                            collector.money = collector.money - 1
+                        elif collection == 'knight':
+                            collector.money = collector.money - 2
+                        elif collection == 'trembling':
+                            collector.money = collector.money - 3
+
             else:
-                collection = choice(['footman', 'knight', 'trembling'])
+                collection = choice(['footman'])
                 u_new = unit(collection, t, collector, 1)
                 all_unites.append(u_new)
+                if collector.check_food() == False:
+                    u_new.die()
+                else:
+                    if collection == 'footman':
+                        collector.money = collector.money - 1
+                    elif collection == 'knight':
+                        collector.money = collector.money - 2
+                    elif collection == 'trembling':
+                        collector.money = collector.money - 3
         if t.owner == collector and t.castles == 2:
             near_sea = 0
             for s in t.sosed:
@@ -1831,13 +1959,35 @@ def comp_collect_army(collector):
                 if collection == 'ship':
                     u_new = unit('ship', target, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        collector.money = collector.money - 2
                 else:
                     u_new = unit(collection, t, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        if collection == 'footman':
+                            collector.money = collector.money - 1
+                        elif collection == 'knight':
+                            collector.money = collector.money - 2
+                        elif collection == 'trembling':
+                            collector.money = collector.money - 3
             else:
                 collection = choice(['footman', 'knight', 'trembling'])
                 u_new = unit(collection, t, collector, 1)
                 all_unites.append(u_new)
+                if collector.check_food() == False:
+                    u_new.die()
+                else:
+                    if collection == 'footman':
+                        collector.money = collector.money - 1
+                    elif collection == 'knight':
+                        collector.money = collector.money - 2
+                    elif collection == 'trembling':
+                        collector.money = collector.money - 3
             near_sea = 0
             for s in t.sosed:
                 if s.type_cell != 'earth' and near_sea != 1:
@@ -1848,22 +1998,52 @@ def comp_collect_army(collector):
                     if near_sea == 1:
                         target = s
             if near_sea == 1:
-                collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                if collection != 'knight' and collection != 'trembling':
+                    collection = choice(['footman', 'knight', 'trembling', 'ship'])
+                else:
+                    collection = choice(['footman', 'ship'])
                 if collection == 'ship':
                     u_new = unit('ship', target, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        collector.money = collector.money - 2
                 else:
                     u_new = unit(collection, t, collector, 1)
                     all_unites.append(u_new)
+                    if collector.check_food() == False:
+                        u_new.die()
+                    else:
+                        if collection == 'footman':
+                            collector.money = collector.money - 1
+                        elif collection == 'knight':
+                            collector.money = collector.money - 2
+                        elif collection == 'trembling':
+                            collector.money = collector.money - 3
             else:
-                collection = choice(['footman', 'knight', 'trembling'])
+                if collection != 'knight' and collection != 'trembling':
+                    collection = choice(['footman', 'knight', 'trembling'])
+                else:
+                    collection = choice(['footman'])
                 u_new = unit(collection, t, collector, 1)
                 all_unites.append(u_new)
+                if collector.check_food() == False:
+                    u_new.die()
+                else:
+                    if collection == 'footman':
+                        collector.money = collector.money - 1
+                    elif collection == 'knight':
+                        collector.money = collector.money - 2
+                    elif collection == 'trembling':
+                        collector.money = collector.money - 3
     for u in all_unites:
         u.show()
 
+
 def test_button():
     print(game_proc)
+
 
 def update_screen():
     for c in all_commands:
@@ -1874,6 +2054,7 @@ def update_screen():
     for u in all_unites:
         u.show()
     root.after(2000, update_screen)
+
 
 root=Tk()
 root.geometry(str(SX()) + 'x' + str(SY()))
@@ -1898,13 +2079,14 @@ collection_labels = []
 images = []
 
 path = "media/map0.gif"
-img = PhotoImage(file = path)
+img = PhotoImage(file=path)
 images.append(img)
-image_map = Label(canv, image = img)
+image_map = Label(canv, image=img)
 
-game_proc='menu'
-player_status='niht'
+game_proc = 'menu'
+player_status = 'niht'
 h = 0
+unshow_bat = 0
 all_territories = [] + import_cells()
 track_images = []
 all_unites = []
@@ -1918,14 +2100,14 @@ image_map.bind('<Button-4>', map_down)
 image_map.bind('<Button-5>', map_up)
 image_map.bind('<Motion>', motion)
 
-Finish_button=Button(root, text = 'дима мокеев петух', command = finish_button_click)
-Test_button=Button(root, text = 'Манул', command = test_button)
+Finish_button = Button(root, text='дима мокеев петух', command=finish_button_click)
+Test_button = Button(root, text='Манул', command=test_button)
 Test_button.place(x=200, y=50)
-title_label=Label(root, text='дима мокеев петух')
-battle_img = PhotoImage(file = "media/battle.gif")
-battle_window = Label(root, width = SX() * 8 // 10, heigh = SY() * 8 // 10, image = battle_img)
-LeaderD=Label(root)
-LeaderA=Label(root)
+title_label = Label(root, text='дима мокеев петух')
+battle_img = PhotoImage(file="media/battle.gif")
+battle_window = Label(root, width=SX() * 8 // 10, heigh=SY() * 8 // 10, image=battle_img)
+LeaderD = Label(root)
+LeaderA = Label(root)
 create_command()
 create_leaders()
 
