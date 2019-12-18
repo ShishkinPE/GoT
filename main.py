@@ -845,7 +845,7 @@ def phase_vesteros():
     for u in all_unites:
         u.health = 1
         u.clicked = 0
-    phase = choice([ 'collect_army', 'food_phase', 'winter_is_coming', 'army_pay', 'money'])
+    phase = choice(['collect_army', 'food_phase', 'winter_is_coming', 'army_pay', 'money', 'collect_army'])
     if phase == 'exit':
         exit()
     elif phase == 'food_phase':
@@ -1702,14 +1702,14 @@ def end_battle():
     for c in all_commands:
         if c.clicked == 1 and c.type == 'attak' and c.owner == attak_player:
             power_attak += c.power
-        if c.place == battle_place and c.type == 'defence':
+        if c.place == battle_place and c.type == 'defense':
             power_defense += c.power
     for t in battle_place.sosed:
         for c in all_commands:
             if c.place == t and c.type == 'boost':
                 if c.owner == attak_player:
                     for u in all_unites:
-                        if u.place == c.place and u.unit_type == 'trambeling' and t.castles > 0:
+                        if u.place == c.place and u.unit_type == 'trembling' and t.castles > 0:
                             power_attak += u.power
                         elif u.place == c.place and u.unit_type != 'ship' and battle_place.type_cell == 'earth':
                             power_attak += u.power
@@ -1720,7 +1720,7 @@ def end_battle():
                         power_attak += c.power
                 if c.owner == defense_player:
                     for u in all_unites:
-                        if u.place == c.place and u.unit_type == 'trambeling' and t.castles > 0:
+                        if u.place == c.place and u.unit_type == 'trembling' and t.castles > 0:
                             power_defense += u.power * 0
                         elif u.place == c.place and u.unit_type != 'ship' and battle_place.type_cell == 'earth':
                             power_defense += u.power
@@ -1798,10 +1798,10 @@ def end_battle():
         for u in local_all_unites:
             if u.place == battle_place:
                 def_unites.append(u)
-        for u in def_unites:
-            if u.unit_type == 'trembling':
-                def_unites.remove(u)
-                u.die
+        #for u in def_unites:
+            #if u.unit_type == 'trembling':
+                #def_unites.remove(u)
+                #u.die
         died_u = attak_swords - defence_towers
         if died_u < 0:
             died_u = 0
@@ -1843,10 +1843,10 @@ def end_battle():
         for u in local_all_unites:
             if u.target == battle_place and u.place != battle_place:
                 att_unites.append(u)
-        for u in att_unites:
-            if u.unit_type == 'trembling':
-                def_unites.remove(u)
-                u.die
+        #for u in att_unites:
+            #if u.unit_type == 'trembling':
+                #def_unites.remove(u)
+                #u.die
         died_u = defence_swords - attak_towers
         if died_u < 0:
             died_u = 0
