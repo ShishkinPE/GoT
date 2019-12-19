@@ -43,7 +43,11 @@ class command:
             pst = 1
         for t in all_territories:
             t.update_owner(all_houses, all_unites)
-            if (pst > stars or self.st == 0) and t.owner == player_status and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
+            marker = 0
+            for u in all_unites:
+                if u.place == t and u.owner == player_status:
+                    marker = 1
+            if marker and (pst > stars or self.st == 0) and t.owner == player_status and event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15 and self.clicked == 1:
                 for c in all_commands:
                     if c.place == t:
                         tt = self.place
