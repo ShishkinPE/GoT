@@ -63,6 +63,7 @@ class command:
         help_label.config(text = self.tx)
         help_label.place(x=0, y=0)
 
+
 class attak(command):
 
     def __init__(self, power, owner, x0, y0):
@@ -947,6 +948,14 @@ def motion_help(event):
         if event.widget == c.id:
             c.motion_help()
             r=1
+    for t in all_territories:
+        if event.x < t.x + 30 and event.x > t.x - 30  and event.y > t.y - 15 and event.y < t.y + 15:
+            if t.owner == 0:
+                help_label.config(text='Территория никому не принадлежит')
+            else:
+                help_label.config(text='Владелец: ' + t.owner.name)
+            help_label.place(x=0, y=0)
+            r = 1
     if event.widget == image_track:
         tx = 'Это треки влияния. \n Первый трек - трек железного трона.\n Он определяет очерёдность хода \n' \
              'Второй трек - трек вотчин. \nОн определяет победителя при равенстве сил в битве.\n' \
@@ -1067,6 +1076,7 @@ def finish_button_click():
         # if z = 1 -> uncorrect attack <=> no effect of click
         if not player_status.check_food():
             z = 1
+        #check if there are more than one battle
         for u1 in all_unites:
             for u2 in all_unites:
                 if u1.target == u2.place and u1.owner != u2.owner:
@@ -1741,8 +1751,6 @@ def end_battle():
             defence_towers = l.towers
     power_attak += (6 - attak_player.sword) * 0.1
     power_defense += (6 - defense_player.sword) * 0.1
-    print('attack=' + str(power_attak))
-    print('def = ' + str(power_defense))
     #next part of cod to spin leaders ceards
     att_l_unusable = 0
     def_l_unusable = 0
